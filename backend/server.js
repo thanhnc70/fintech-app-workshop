@@ -114,7 +114,6 @@ app.listen(PORT, () => console.log(`Server chạy online tại cổng ${PORT}`))
 app.get('/', (req, res) => {
   res.send('Backend Node.js đã chạy thành công trên Vercel!');
 });
-
 app.get('/', (req, res) => {
   res.json({ message: "Backend Node.js kết nối Vercel & Neon đã chạy thành công!" });
 });
