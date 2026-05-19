@@ -4,7 +4,12 @@ const cors = require('cors');
 
 const app = express();
 app.use(express.json());
-app.use(cors()); // Mở chặn CORS để Frontend Vercel gọi được API Render
+// Cấu hình CORS mở hoàn toàn để nhận diện được mọi tên miền từ Vercel
+app.use(cors({
+    origin: '*', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Điền chuỗi kết nối Database lấy từ Neon.tech vào đây
 const connectionString = "postgresql://neondb_owner:npg_YTFb4NMX6jyK@ep-falling-rain-apkbnznb-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
