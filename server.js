@@ -1,124 +1,115 @@
 const express = require('express');
-const sql = require('mssql');
+const { Pool } = require('pg');
 const cors = require('cors');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors()); // Mở chặn CORS để Frontend Vercel gọi được API Render
 
-const dbConfig = {
-    user: 'sa',
-    password: '123456', // <--- Nhớ kiểm tra lại mật khẩu SQL của bạn
-    server: 'localhost', 
-    database: 'WebDauTien',
-    options: { encrypt: false, trustServerCertificate: true }
-};
+// Điền chuỗi kết nối Database lấy từ Neon.tech vào đây
+const connectionString = "postgresql://neondb_owner:npg_YTFb4NMX6jyK@ep-falling-rain-apkbnznb-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+
+const pool = new Pool({
+    connectionString: connectionString,
+    ssl: { rejectUnauthorized: false } // Bắt buộc phải có để kết nối an toàn bảo mật Cloud
+});
 
 // 1. API ĐĂNG KÝ
 app.post('/api/register', async (req, res) => {
-    const { username, password, fullname } = req.body;
     try {
-        let pool = await sql.connect(dbConfig);
-        await pool.request()
-            .input('user', sql.VarChar, username)
-            .input('pass', sql.VarChar, password)
-            .input('name', sql.NVarChar, fullname)
-            .query('INSERT INTO Users (Username, Password, FullName) VALUES (@user, @pass, @name)');
-        res.json({ success: true, message: "Đăng ký thành viên thành công rồi nhé!" });
+        const { username, password, fullname } = req.body;
+        await pool.query(
+            'INSERT INTO Users (Username, Password, FullName) VALUES ($1, $2, $3)', 
+            [username, password, fullname]
+        );
+        res.json({ success: true, message: "Đăng ký tài khoản thành công!" });
     } catch (err) {
-        res.status(500).json({ success: false, message: "Lỗi lưu DB: " + err.message });
+        res.status(500).json({ success: false, message: "Tài khoản đã tồn tại hoặc lỗi: " + err.message });
     }
 });
 
-// 2. API ĐĂNG NHẬP (ĐÃ FIX: Lấy phần tử [0] để frontend đọc được Id)
-// 2. API ĐĂNG NHẬP (ĐÃ CHUẨN HÓA ĐỂ SỬA LỖI CHUYỂN TRANG)
+// 2. API ĐĂNG NHẬP
 app.post('/api/login', async (req, res) => {
-    const { username, password } = req.body;
     try {
-        let pool = await sql.connect(dbConfig);
-        let result = await pool.request()
-            .input('user', sql.VarChar, username)
-            .input('pass', sql.VarChar, password)
-            .query('SELECT Id, FullName FROM Users WHERE Username = @user AND Password = @pass');
-        
-        if (result.recordset && result.recordset.length > 0) {
-            // SỬA CHÍNH XÁC DÒNG NÀY: Lấy phần tử đầu tiên [0] của mảng để trả về đúng 1 Object duy nhất chứa Id
-            res.json({ 
-                success: true, 
-                message: "Đăng nhập thành công!", 
-                user: result.recordset[0] 
-            });
+        const { username, password } = req.body;
+        const result = await pool.query(
+            'SELECT Id, Username, FullName FROM Users WHERE Username = $1 AND Password = $2', 
+            [username, password]
+        );
+        if (result.rows.length > 0) {
+            // Trả về thuộc tính chữ HOA đầu để đồng bộ với mã nguồn cũ của bạn
+            const user = {
+                Id: result.rows[0].id,
+                Username: result.rows[0].username,
+                FullName: result.rows[0].fullname
+            };
+            res.json({ success: true, user });
         } else {
-            res.json({ success: false, message: "Không tìm thấy tài khoản này hoặc sai mật khẩu!" });
+            res.status(401).json({ success: false, message: "Sai tài khoản hoặc mật khẩu!" });
         }
-    } catch (err) {
-        res.status(500).json({ success: false, message: "Lỗi kết nối: " + err.message });
-    }
-});
-
-// 3. API LẤY DANH SÁCH CHI TIÊU
-app.get('/api/transactions/:userId', async (req, res) => {
-    try {
-        let pool = await sql.connect(dbConfig);
-        let result = await pool.request()
-            .input('userId', sql.Int, req.params.userId)
-            // Nhớ thêm chữ Id vào đầu câu lệnh SELECT này bạn nhé:
-            .query('SELECT Id, Title, Amount, CreatedAt FROM Transactions WHERE UserId = @userId ORDER BY CreatedAt DESC');
-        
-        res.json(result.recordset || []); 
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-// 4. API THÊM KHOẢN THU/CHI
-app.post('/api/transactions', async (req, res) => {
-    const { userId, title, amount } = req.body;
-    try {
-        let pool = await sql.connect(dbConfig);
-        await pool.request()
-            .input('userId', sql.Int, userId)
-            .input('title', sql.NVarChar, title)
-            .input('amount', sql.Decimal(18,2), amount)
-            .query('INSERT INTO Transactions (UserId, Title, Amount) VALUES (@userId, @title, @amount)');
-        res.json({ success: true, message: "Đã ghi nhận giao dịch!" });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-app.listen(5000, () => console.log("🚀 Server thực tế đang chạy tại cổng 5000"));
-// 4. API CẬP NHẬT GIAO DỊCH (SỬA)
+// 3. API LẤY DANH SÁCH GIAO DỊCH
+app.get('/api/transactions/:userId', async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT id AS "Id", title AS "Title", amount AS "Amount", createdat AS "CreatedAt" FROM Transactions WHERE UserId = $1 ORDER BY createdat DESC', 
+            [req.params.userId]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// 4. API THÊM MỚI
+app.post('/api/transactions', async (req, res) => {
+    try {
+        const { userId, title, amount } = req.body;
+        await pool.query(
+            'INSERT INTO Transactions (UserId, Title, Amount) VALUES ($1, $2, $3)', 
+            [userId, title, amount]
+        );
+        res.json({ success: true, message: "Lưu thành công!" });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// 5. API CẬP NHẬT (SỬA)
 app.put('/api/transactions/:id', async (req, res) => {
     try {
         const { title, amount } = req.body;
-        const { id } = req.params;
-
-        let pool = await sql.connect(dbConfig);
-        await pool.request()
-            .input('id', sql.Int, id)
-            .input('title', sql.NVarChar(100), title)
-            .input('amount', sql.Decimal(18, 2), amount)
-            .query('UPDATE Transactions SET Title = @title, Amount = @amount WHERE Id = @id');
-
+        await pool.query(
+            'UPDATE Transactions SET Title = $1, Amount = $2 WHERE Id = $3', 
+            [title, amount, req.params.id]
+        );
         res.json({ success: true, message: "Cập nhật thành công!" });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// 5. API XÓA GIAO DỊCH (XÓA)
+// 6. API XÓA
 app.delete('/api/transactions/:id', async (req, res) => {
     try {
-        const { id } = req.params;
-
-        let pool = await sql.connect(dbConfig);
-        await pool.request()
-            .input('id', sql.Int, id)
-            .query('DELETE FROM Transactions WHERE Id = @id');
-
+        await pool.query('DELETE FROM Transactions WHERE Id = $1', [req.params.id]);
         res.json({ success: true, message: "Xóa thành công!" });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
+});
+
+// Cấu hình cổng chạy Online tự động nhận diện từ nền tảng đám mây
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server chạy online tại cổng ${PORT}`));
+app.get('/', (req, res) => {
+  res.send('Backend Node.js đã chạy thành công trên Vercel!');
+});
+
+app.get('/', (req, res) => {
+  res.json({ message: "Backend Node.js kết nối Vercel & Neon đã chạy thành công!" });
 });
