@@ -3,455 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Quản Lý Chi Tiêu Cá Nhân</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --primary-color: #4f46e5;
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --dark-color: #0f172a;
-            --bg-color: #f8fafc;
-        }
-        body { 
-            background-color: var(--bg-color); 
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #334155;
-        }
-        .hidden { display: none !important; }
-        
-        /* Chuyển động mượt mà */
-        .fade-in { animation: fadeIn 0.4s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Khối giao diện chuyên nghiệp */
-        .card-custom {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-            transition: all 0.3s ease;
-        }
-        .card-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Thẻ thống kê số dư tiền */
-        .stat-card {
-            padding: 24px;
-            border-radius: 20px;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-        .stat-card::after {
-            content: ''; position: absolute; right: -20px; bottom: -20px;
-            width: 120px; height: 120px; background: rgba(255,255,255,0.08);
-            border-radius: 50%;
-        }
-        .bg-balance { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
-        .bg-income { background: linear-gradient(135deg, #059669, #10b981); }
-        .bg-expense { background: linear-gradient(135deg, #dc2626, #f87171); }
-
-        /* Form Nhập Liệu & Input chuẩn */
-        .form-control-custom {
-            border-radius: 12px;
-            padding: 12px 16px;
-            border: 1px solid #cbd5e1;
-            transition: all 0.2s ease;
-        }
-        .form-control-custom:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-            outline: none;
-        }
-
-        /* Nút thao tác ứng dụng */
-        .btn-custom {
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .btn-custom:active { transform: scale(0.98); }
-
-        /* Bảng lịch sử dữ liệu */
-        .table-custom th {
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
-            padding: 16px;
-        }
-        .table-custom td { padding: 16px; border-bottom: 1px solid #f1f5f9; }
-        .tr-hover:hover { background-color: #f8fafc; }
-    </style>
+    <title>Ví Điện Tử Thông Minh</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-weight/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="bg-slate-50 font-sans min-h-screen flex flex-col justify-between">
 
-<div id="auth-screen" class="container py-5 fade-in">
-    <div class="text-center mb-5">
-        <div class="bg-primary text-white d-inline-block rounded-circle p-3 mb-3 shadow-sm">
-            <i class="fa-solid fa-wallet fa-2x"></i>
+    <header class="text-center py-10 bg-white shadow-sm border-b border-slate-100">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600 text-white text-2xl shadow-lg shadow-blue-200 mb-4">
+            <i class="fa-solid fa-wallet"></i>
         </div>
-        <h2 class="fw-bold text-dark">Ví Điện Tử Thông Minh</h2>
-        <p class="text-muted">Quản lý tài chính cá nhân theo phong cách chuyên nghiệp</p>
-    </div>
+        <h1 class="text-3xl font-extrabold text-slate-8xl">Ví Điện Tử Thông Minh</h1>
+        <p class="text-slate-500 mt-2 font-medium">Quản lý tài chính cá nhân theo phong cách chuyên nghiệp</p>
+    </header>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-5 col-md-6 mb-4">
-            <div class="card card-custom p-4">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="p-2 bg-primary-subtle text-primary rounded-3 me-3"><i class="fa-solid fa-user-plus"></i></div>
-                    <h4 class="mb-0 fw-bold">Tạo Tài Khoản</h4>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label text-secondary small fw-semibold">Họ và Tên</label>
-                    <input type="text" id="reg-fullname" class="form-control form-control-custom" placeholder="Ví dụ: Nguyễn Văn A">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label text-secondary small fw-semibold">Tài khoản</label>
-                    <input type="text" id="reg-username" class="form-control form-control-custom" placeholder="Nhập tên đăng nhập">
-                </div>
-                <div class="mb-4">
-                    <label class="form-label text-secondary small fw-semibold">Mật khẩu</label>
-                    <input type="password" id="reg-password" class="form-control form-control-custom" placeholder="••••••••">
-                </div>
-                <button onclick="handleRegister()" class="btn btn-primary btn-custom w-100 shadow-sm"><i class="fa-solid fa-check me-2"></i>Đăng Ký Tài Khoản</button>
-            </div>
-        </div>
-
-        <div class="col-lg-5 col-md-6 mb-4">
-            <div class="card card-custom p-4">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="p-2 bg-success-subtle text-success rounded-3 me-3"><i class="fa-solid fa-right-to-bracket"></i></div>
-                    <h4 class="mb-0 fw-bold">Đăng Nhập Máy Chủ</h4>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label text-secondary small fw-semibold">Tài khoản</label>
-                    <input type="text" id="login-username" class="form-control form-control-custom" placeholder="Nhập tài khoản">
-                </div>
-                <div class="mb-4">
-                    <label class="form-label text-secondary small fw-semibold">Mật khẩu</label>
-                    <input type="password" id="login-password" class="form-control form-control-custom" placeholder="••••••••">
-                </div>
-                <button onclick="handleLogin()" class="btn btn-success btn-custom w-100 shadow-sm"><i class="fa-solid fa-server me-2"></i>Kết Nối Hệ Thống</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div id="dashboard-screen" class="container py-5 hidden fade-in">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 pb-3 border-bottom">
-        <div>
-            <span class="text-muted text-uppercase fs-7 fw-bold tracking-wider">Hệ thống quản lý tài chính</span>
-            <h2 class="fw-bold text-slate-800 m-0">Xin chào, <span id="user-welcome" class="text-primary">Thành viên</span> 👋</h2>
-        </div>
-        <button onclick="handleLogout()" class="btn btn-outline-danger btn-custom mt-3 mt-md-0 btn-sm px-4"><i class="fa-solid fa-power-off me-2"></i>Đăng xuất hệ thống</button>
-    </div>
-
-    <div class="row mb-5">
-        <div class="col-md-4 mb-3">
-            <div class="stat-card bg-balance shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="small fw-semibold text-white-50">SỐ DƯ HIỆN TẠI</span>
-                    <i class="fa-solid fa-scale-balanced text-white-50"></i>
-                </div>
-                <h3 class="fw-bold mb-0" id="stat-total">0 đ</h3>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="stat-card bg-income shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="small fw-semibold text-white-50">TỔNG KHOẢN THU</span>
-                    <i class="fa-solid fa-arrow-trend-up text-white-50"></i>
-                </div>
-                <h3 class="fw-bold mb-0" id="stat-income">0 đ</h3>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="stat-card bg-expense shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="small fw-semibold text-white-50">TỔNG KHOẢN CHI</span>
-                    <i class="fa-solid fa-arrow-trend-down text-white-50"></i>
-                </div>
-                <h3 class="fw-bold mb-0" id="stat-expense">0 đ</h3>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-4 mb-4">
-            <div class="card card-custom p-4" id="form-card">
-                <div class="d-flex align-items-center mb-4">
-                    <div id="form-icon-box" class="p-2 bg-dark text-white rounded-3 me-3">
-                        <i id="form-icon" class="fa-solid fa-plus-minus"></i>
+    <main class="max-w-5xl w-full mx-auto px-4 py-12 flex-grow flex items-center justify-center">
+        <div class="grid md:grid-cols-2 gap-8 w-full">
+            
+            <div class="bg-white p-8 rounded-3xl shadow-md border border-slate-100 transition-all hover:shadow-lg">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-user-plus"></i>
                     </div>
-                    <h4 id="form-title" class="mb-0 fw-bold fs-5">Thêm giao dịch mới</h4>
+                    <h2 class="text-2xl font-bold text-slate-800">Tạo Tài Khoản</h2>
                 </div>
                 
-                <input type="hidden" id="tx-id"> 
-                
-                <div class="mb-3">
-                    <label class="form-label text-secondary small fw-semibold">Nội dung chi tiêu / Thu nhập</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light text-muted border-end-0" style="border-radius: 12px 0 0 12px;"><i class="fa-solid fa-pen-nib"></i></span>
-                        <input type="text" id="tx-title" class="form-control form-control-custom border-start-0" style="border-radius: 0 12px 12px 0;" placeholder="Ví dụ: Tiền lương, Mua cơm trưa...">
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Họ và Tên</label>
+                        <input type="text" id="regFullname" placeholder="Ví dụ: Nguyễn Văn An" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-slate-50/50">
                     </div>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label text-secondary small fw-semibold">Số tiền giao dịch (VNĐ)</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light text-muted border-end-0" style="border-radius: 12px 0 0 12px;"><i class="fa-solid fa-money-bill-wave"></i></span>
-                        <input type="number" id="tx-amount" class="form-control form-control-custom border-start-0" style="border-radius: 0 12px 12px 0;" placeholder="Thu: nhập số dương (+), Chi: nhập số âm (-)">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Tài khoản</label>
+                        <input type="text" id="regUsername" placeholder="Nhập tên tài khoản" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-slate-50/50">
                     </div>
-                </div>
-                
-                <div id="form-buttons">
-                    <button onclick="addTransaction()" class="btn btn-dark btn-custom w-100 shadow-sm"><i class="fa-solid fa-floppy-disk me-2"></i>Ghi Lại Giao Dịch</button>
-                </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Mật khẩu</label>
+                        <input type="password" id="regPassword" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-slate-50/50">
+                    </div>
+                    <button type="button" onclick="handleRegister(event)" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-check"></i> Đăng Ký Tài Khoản
+                    </button>
+                </form>
             </div>
-        </div>
-        
-        <div class="col-lg-8 mb-4">
-            <div class="card card-custom p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="mb-0 fw-bold fs-5"><i class="fa-solid fa-clock-rotate-left text-muted me-2"></i>Nhật ký giao dịch thực tế</h4>
-                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill small fw-medium" id="tx-count">0 giao dịch</span>
+
+            <div class="bg-white p-8 rounded-3xl shadow-md border border-slate-100 transition-all hover:shadow-lg">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">Đăng Nhập Máy Chủ</h2>
                 </div>
                 
-                <div class="table-responsive">
-                    <table class="table table-custom align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th>Thời gian máy chủ</th>
-                                <th>Nội dung mục</th>
-                                <th class="text-end">Số tiền thực tế</th>
-                                <th class="text-center" style="width: 150px;">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transaction-history">
-                            </tbody>
-                    </table>
-                </div>
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Tài khoản</label>
+                        <input type="text" id="loginUsername" placeholder="Nhập tài khoản" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all bg-slate-50/50">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Mật khẩu</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all bg-slate-50/50">
+                    </div>
+                    <button type="button" onclick="handleLogin(event)" class="w-full mt-8 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-server"></i> Kết Nối Hệ Thống
+                    </button>
+                </form>
             </div>
+
         </div>
-    </div>
-</div>
+    </main>
 
-<script>
-    const API_URL = 'https://fintech-backend-api.onrender.com/api';
-    let currentUser = null;
-    let allTransactions = [];
+    <footer class="text-center py-6 text-sm text-slate-400 font-medium">
+        &copy; 2026 Fintech Workshop. Đồng bộ dữ liệu Full-Stack trực tuyến.
+    </footer>
 
-    async function handleRegister() {
-        const fullname = document.getElementById('reg-fullname').value;
-        const username = document.getElementById('reg-username').value;
-        const password = document.getElementById('reg-password').value;
-        if (!fullname || !username || !password) return alert("Vui lòng điền đủ thông tin!");
+    <script>
+        // ĐƯỜNG LINK API CHUẨN ĐÃ ĐƯỢC FIX LỖI CHÍNH TẢ PHÂN TÁCH SUBDOMAIN RENDER
+        const API_URL = 'https://fintech-backend-api.onrender.com/api';
 
-        const response = await fetch(`${API_URL}/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fullname, username, password })
-        });
-        const data = await response.json();
-        alert(data.message);
-    }
-
-    async function handleLogin() {
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
-        if (!username || !password) return alert("Vui lòng nhập tài khoản và mật khẩu!");
-
-        try {
-            const response = await fetch(`${API_URL}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const data = await response.json();
+        // 1. XỬ LÝ ĐĂNG KÝ
+        async function handleRegister(event) {
+            if (event) event.preventDefault(); // Đóng băng lệnh reload trang rác của trình duyệt
             
-            if (data.success && data.user) {
-                alert("Chào mừng " + data.user.FullName + " đã quay trở lại!");
-                currentUser = data.user;
-                
-                const welcomeTag = document.getElementById('user-welcome');
-                if (welcomeTag) welcomeTag.innerText = currentUser.FullName;
-                
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('dashboard-screen').classList.remove('hidden');
-                
-                loadTransactions();
-            } else {
-                alert(data.message || "Tài khoản không hợp lệ!");
-            }
-        } catch (err) {
-            alert("Lỗi kết nối client: " + err.message);
-        }
-    }
+            const fullname = document.getElementById('regFullname').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
 
-    // 1. CHỨC NĂNG ĐỌC (Đồng bộ nhận chữ cái viết HOA: Id, Title, Amount, CreatedAt)
-    async function loadTransactions() {
-        if (!currentUser) return;
-        try {
-            const response = await fetch(`${API_URL}/transactions/${currentUser.Id}`);
-            const list = await response.json();
-            allTransactions = list || []; 
-            
-            const tbody = document.getElementById('transaction-history');
-            tbody.innerHTML = '';
-            
-            // Cập nhật số đếm giao dịch
-            document.getElementById('tx-count').innerText = `${allTransactions.length} giao dịch`;
-
-            // Tính toán tổng thu - tổng chi tự động hiển thị lên ví điện tử
-            let totalBalance = 0, totalIncome = 0, totalExpense = 0;
-            
-            if (allTransactions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-5"><i class="fa-solid fa-folder-open d-block mb-2 fa-2x text-black-50"></i>Bảng chưa có dữ liệu giao dịch. Bạn hãy tạo mới ở form bên trái nhé!</td></tr>`;
-                updateStatWidgets(0, 0, 0);
+            if (fullname === "" || username === "" || password === "") {
+                alert("⚠️ Vui lòng điền đầy đủ tất cả thông tin đăng ký!");
                 return;
             }
+
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, fullname })
+                });
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                alert("❌ Lỗi kết nối đám mây: " + error.message);
+            }
+        }
+
+        // 2. XỬ LÝ ĐĂNG NHẬP
+        async function handleLogin(event) {
+            if (event) event.preventDefault(); // Chống trùng lặp dữ liệu tải lại trang
             
-            allTransactions.forEach(item => {
-                const date = new Date(item.CreatedAt).toLocaleString('vi-VN');
-                const numericAmount = parseFloat(item.Amount);
-                const isExpense = numericAmount < 0;
-                
-                // Cộng dồn tiền vào widget tổng quan
-                totalBalance += numericAmount;
-                if (isExpense) totalExpense += numericAmount;
-                else totalIncome += numericAmount;
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
 
-                tbody.innerHTML += `
-                    <tr class="tr-hover fade-in">
-                        <td class="text-muted small"><i class="fa-regular fa-calendar me-2"></i>${date}</td>
-                        <td class="fw-medium text-dark">${item.Title}</td>
-                        <td class="text-end ${isExpense ? 'text-danger fw-bold' : 'text-success fw-bold'}">
-                            ${isExpense ? '' : '+'}${numericAmount.toLocaleString('vi-VN')} đ
-                        </td>
-                        <td class="text-center">
-                            <button onclick="prepareEdit(${item.Id})" class="btn btn-warning btn-sm me-1 rounded-3 px-2 py-1 fs-7" title="Sửa mục này"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
-                            <button onclick="deleteTransaction(${item.Id})" class="btn btn-danger btn-sm rounded-3 px-2 py-1 fs-7" title="Xóa mục này"><i class="fa-solid fa-trash-can"></i> Xóa</button>
-                        </td>
-                    </tr>`;
-            });
+            if (username === "" || password === "") {
+                alert("⚠️ Vui lòng nhập tài khoản và mật khẩu để đăng nhập!");
+                return;
+            }
 
-            updateStatWidgets(totalBalance, totalIncome, totalExpense);
-        } catch (err) {
-            console.error("Lỗi nạp giao dịch:", err);
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert("🎉 Đăng nhập thành công! Hệ thống đám mây đã thông suốt.");
+                    // Bạn có thể viết thêm code chuyển trang hoặc hiển thị dashboard của bạn ở đây
+                } else {
+                    alert("❌ " + data.message);
+                }
+            } catch (error) {
+                alert("❌ Lỗi kết nối đám mây: " + error.message);
+            }
         }
-    }
-
-    // Hàm phụ trợ cập nhật số tiền hiển thị lên ví
-    function updateStatWidgets(balance, income, expense) {
-        document.getElementById('stat-total').innerText = `${balance.toLocaleString('vi-VN')} đ`;
-        document.getElementById('stat-income').innerText = `${income.toLocaleString('vi-VN')} đ`;
-        document.getElementById('stat-expense').innerText = `${Math.abs(expense).toLocaleString('vi-VN')} đ`;
-    }
-
-    // 2. CHỨC NĂNG THÊM (CREATE)
-    async function addTransaction() {
-        const title = document.getElementById('tx-title').value;
-        const amount = document.getElementById('tx-amount').value;
-        if (!title || !amount) return alert("Vui lòng nhập đầy đủ nội dung và số tiền cần thêm!");
-
-        const response = await fetch(`${API_URL}/transactions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: currentUser.Id, title, amount: parseFloat(amount) })
-        });
-        const data = await response.json();
-        if (data.success) {
-            resetForm();
-            loadTransactions();
-        }
-    }
-
-    // 3. CHỨC NĂNG CHUẨN BỊ SỬA (Nạp dữ liệu lên Form thông minh)
-    function prepareEdit(id) {
-        const tx = allTransactions.find(item => item.Id === id);
-        if (!tx) return;
-
-        document.getElementById('tx-id').value = tx.Id;
-        document.getElementById('tx-title').value = tx.Title;
-        document.getElementById('tx-amount').value = tx.Amount;
-
-        // Đổi trạng thái form sang Modern Update Style
-        document.getElementById('form-title').innerText = "Cập nhật dữ liệu";
-        document.getElementById('form-icon-box').className = "p-2 bg-warning text-dark rounded-3 me-3";
-        document.getElementById('form-card').className = "card card-custom p-4 border border-warning shadow";
-        document.getElementById('form-buttons').innerHTML = `
-            <div class="row g-2">
-                <div class="col-6"><button onclick="updateTransaction()" class="btn btn-warning btn-custom w-100"><i class="fa-solid fa-arrows-rotate me-2"></i>Lưu</button></div>
-                <div class="col-6"><button onclick="resetForm()" class="btn btn-secondary btn-custom w-100">Hủy</button></div>
-            </div>
-        `;
-    }
-
-    // 4. CHỨC NĂNG CẬP NHẬT (UPDATE)
-    async function updateTransaction() {
-        const id = document.getElementById('tx-id').value;
-        const title = document.getElementById('tx-title').value;
-        const amount = document.getElementById('tx-amount').value;
-
-        if (!title || !amount) return alert("Vui lòng không để trống thông tin chỉnh sửa!");
-
-        const response = await fetch(`${API_URL}/transactions/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, amount: parseFloat(amount) })
-        });
-        const data = await response.json();
-        if (data.success) {
-            alert("Thay đổi thông tin chi tiêu thành công!");
-            resetForm();
-            loadTransactions();
-        } else {
-            alert(data.message || "Không thể cập nhật!");
-        }
-    }
-
-    // 5. CHỨC NĂNG XÓA (DELETE)
-    async function deleteTransaction(id) {
-        if (!confirm("Hệ thống xác nhận: Bạn có chắc chắn muốn xóa vĩnh viễn dòng chi tiêu này không?")) return;
-
-        const response = await fetch(`${API_URL}/transactions/${id}`, {
-            method: 'DELETE'
-        });
-        const data = await response.json();
-        if (data.success) {
-            loadTransactions();
-        } else {
-            alert(data.message || "Không thể thực hiện lệnh xóa!");
-        }
-    }
-
-    function resetForm() {
-        document.getElementById('tx-id').value = '';
-        document.getElementById('tx-title').value = '';
-        document.getElementById('tx-amount').value = '';
-        document.getElementById('form-title').innerText = "Thêm giao dịch mới";
-        document.getElementById('form-icon-box').className = "p-2 bg-dark text-white rounded-3 me-3";
-        document.getElementById('form-card').className = "card card-custom p-4";
-        document.getElementById('form-buttons').innerHTML = `
-            <button onclick="addTransaction()" class="btn btn-dark btn-custom w-100 shadow-sm"><i class="fa-solid fa-floppy-disk me-2"></i>Ghi Lại Giao Dịch</button>
-        `;
-    }
-
-    function handleLogout() {
-        currentUser = null;
-        resetForm();
-        document.getElementById('auth-screen').classList.remove('hidden');
-        document.getElementById('dashboard-screen').classList.add('hidden');
-    }
-</script>
+    </script>
 </body>
 </html>
