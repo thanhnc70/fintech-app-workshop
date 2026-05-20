@@ -108,34 +108,64 @@
         }
 
         // 2. XỬ LÝ ĐĂNG NHẬP
-        async function handleLogin(event) {
-            if (event) event.preventDefault(); // Chống trùng lặp dữ liệu tải lại trang
+async function handleLogin(event) {
+    if (event) event.preventDefault(); 
+    
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+
+    if (username === "" || password === "") {
+        alert("⚠️ Vui lòng nhập tài khoản và mật khẩu để đăng nhập!");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            alert("🎉 Đăng nhập thành công! Hệ thống đám mây đã thông suốt.");
             
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
+            // =========================================================
+            // LỆNH CHUYỂN MẠCH GIAO DIỆN ĐI VÀO TRONG SẼ VIẾT TẠI ĐÂY:
+            // =========================================================
+            
+            // 1. Lưu lại tên người dùng vào bộ nhớ trình duyệt để hiển thị lời chào
+            // Nếu API backend của bạn có trả về fullname thì lấy, không thì dùng tạm username
+            const displayUser = data.fullname || username; 
+            
+            // 2. Lệnh chuyển hướng trang (Cách 1: Nếu bạn làm Dashboard ở file riêng biệt)
+            // window.location.href = "dashboard.html"; 
 
-            if (username === "" || password === "") {
-                alert("⚠️ Vui lòng nhập tài khoản và mật khẩu để đăng nhập!");
-                return;
-            }
+            // 3. Lệnh ẩn/hiện giao diện trực tiếp (Cách 2: Nếu dashboard nằm chung file index.html)
+            // Bạn chỉ cần tạo 1 thẻ <div id="dashboard"> phía trên, rồi gọi lệnh:
+            // document.querySelector('main').innerHTML = `
+            //     <div class="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-lg text-center">
+            //         <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+            //             <i class="fa-solid fa-circle-user"></i>
+            //         </div>
+            //         <h2 class="text-2xl font-bold text-slate-800">Xin chào, ${displayUser}!</h2>
+            //         <p class="text-slate-500 mt-2">Chào mừng bạn đã truy cập vào hệ thống Ví Điện Tử Cá Nhân.</p>
+            //         <div class="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 text-left">
+            //             <div class="text-sm text-slate-400 font-medium">Số dư khả dụng</div>
+            //             <div class="text-3xl font-black text-slate-800 mt-1">5,000,000 đ</div>
+            //         </div>
+            //         <button onclick="location.reload()" class="mt-6 text-sm font-semibold text-slate-500 hover:text-red-500 transition-all cursor-pointer">
+            //             <i class="fa-solid fa-power-off"></i> Đăng xuất hệ thống
+            //         </button>
+            //     </div>
+            // `;
 
-            try {
-                const response = await fetch(`${API_URL}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    alert("🎉 Đăng nhập thành công! Hệ thống đám mây đã thông suốt.");
-                    // Bạn có thể viết thêm code chuyển trang hoặc hiển thị dashboard của bạn ở đây
-                } else {
-                    alert("❌ " + data.message);
-                }
-            } catch (error) {
-                alert("❌ Lỗi kết nối đám mây: " + error.message);
-            }
+        } else {
+            alert("❌ " + data.message);
         }
-    </script>
+    } catch (error) {
+        alert("❌ Lỗi kết nối đám mây: " + error.message);
+    }
+}
 </body>
 </html>
