@@ -3,70 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ví Điện Tử Thông Minh</title>
+    <title>Ví Điện Tử Thông Minh Premium</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-weight/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-50 font-sans min-h-screen flex flex-col justify-between">
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
 
-    <header class="text-center py-10 bg-white shadow-sm border-b border-slate-100">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600 text-white text-2xl shadow-lg shadow-blue-200 mb-4">
+    <header id="mainHeader" class="text-center py-8 bg-white shadow-sm border-b border-slate-200">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white text-xl shadow-md shadow-blue-200 mb-3">
             <i class="fa-solid fa-wallet"></i>
         </div>
-        <h1 class="text-3xl font-extrabold text-slate-800">Ví Điện Tử Thông Minh</h1>
-        <p class="text-slate-500 mt-2 font-medium">Quản lý tài chính cá nhân theo phong cách chuyên nghiệp</p>
+        <h1 class="text-2xl font-black text-slate-800 tracking-tight">VÍ ĐIỆN TỬ THÔNG MINH</h1>
+        <p class="text-slate-400 text-xs mt-1 font-medium uppercase tracking-wider">Hệ thống quản lý tài chính đám mây</p>
     </header>
 
-    <main id="mainContainer" class="max-w-5xl w-full mx-auto px-4 py-12 flex-grow flex items-center justify-center">
-        <div class="grid md:grid-cols-2 gap-8 w-full">
+    <main id="mainContainer" class="max-w-6xl w-full mx-auto px-4 py-8 flex-grow flex items-center justify-center">
+        <div class="grid md:grid-cols-2 gap-8 w-full max-w-4xl">
             
-            <div class="bg-white p-8 rounded-3xl shadow-md border border-slate-100 transition-all hover:shadow-lg">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/60 transition-all hover:shadow-md">
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-md font-bold">
                         <i class="fa-solid fa-user-plus"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-800">Tạo Tài Khoản</h2>
+                    <h2 class="text-xl font-bold text-slate-800">Tạo Tài Khoản Mới</h2>
                 </div>
                 
                 <form class="space-y-4" onsubmit="handleRegister(event)">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Họ và Tên</label>
-                        <input type="text" id="regFullname" placeholder="Ví dụ: Nguyễn Văn An" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-slate-50/50">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Họ và Tên</label>
+                        <input type="text" id="regFullname" placeholder="Nguyễn Văn An" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-slate-50/50 text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Tài khoản</label>
-                        <input type="text" id="regUsername" placeholder="Nhập tên tài khoản" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-slate-50/50">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tài khoản đăng nhập</label>
+                        <input type="text" id="regUsername" placeholder="username123" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-slate-50/50 text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Mật khẩu</label>
-                        <input type="password" id="regPassword" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-slate-50/50">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mật khẩu bảo mật</label>
+                        <input type="password" id="regPassword" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-slate-50/50 text-sm">
                     </div>
-                    <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="fa-solid fa-check"></i> Đăng Ký Tài Khoản
+                    <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm">
+                        <i class="fa-solid fa-check"></i> Đăng Ký Ngay
                     </button>
                 </form>
             </div>
 
-            <div class="bg-white p-8 rounded-3xl shadow-md border border-slate-100 transition-all hover:shadow-lg">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/60 transition-all hover:shadow-md">
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-md font-bold">
                         <i class="fa-solid fa-right-to-bracket"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-800">Đăng Nhập Máy Chủ</h2>
+                    <h2 class="text-xl font-bold text-slate-800">Đăng Nhập Hệ Thống</h2>
                 </div>
                 
                 <form class="space-y-4" onsubmit="handleLogin(event)">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Tài khoản</label>
-                        <input type="text" id="loginUsername" placeholder="Nhập tài khoản" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all bg-slate-50/50">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tài khoản</label>
+                        <input type="text" id="loginUsername" placeholder="Nhập tên tài khoản" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all bg-slate-50/50 text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-1.5">Mật khẩu</label>
-                        <input type="password" id="loginPassword" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all bg-slate-50/50">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mật khẩu</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all bg-slate-50/50 text-sm">
                     </div>
-                    <button type="submit" class="w-full mt-8 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="fa-solid fa-server"></i> Kết Nối Hệ Thống
+                    <button type="submit" class="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm">
+                        <i class="fa-solid fa-server"></i> Kết Nối Máy Chủ
                     </button>
                 </form>
             </div>
@@ -74,23 +73,30 @@
         </div>
     </main>
 
-    <footer class="text-center py-6 text-sm text-slate-400 font-medium">
-        &copy; 2026 Fintech Workshop. Đồng bộ dữ liệu Full-Stack trực tuyến.
+    <footer class="text-center py-4 text-xs text-slate-400 font-medium border-t border-slate-200 bg-white">
+        &copy; 2026 Fintech Workshop Premium. Đồng bộ hóa dữ liệu thời gian thực.
     </footer>
 
     <script>
         const API_URL = 'https://fintech-backend-api-t83c.onrender.com/api';
+        
+        // Mảng lưu danh sách giao dịch (Dữ liệu CRUD cục bộ cho tài khoản trực quan)
+        let transactions = [
+            { id: 1, title: 'Nhận lương tháng 5', amount: 12000000, type: 'income', date: '2026-05-15' },
+            { id: 2, title: 'Thanh toán tiền điện', amount: 850000, type: 'expense', date: '2026-05-18' },
+            { id: 3, title: 'Mua cà phê sáng', amount: 450000, type: 'expense', date: '2026-05-20' }
+        ];
+        let currentBalance = 15000000;
 
         // 1. XỬ LÝ ĐĂNG KÝ
         async function handleRegister(event) {
-            if (event) event.preventDefault(); 
-            
+            if (event) event.preventDefault();
             const fullname = document.getElementById('regFullname').value.trim();
             const username = document.getElementById('regUsername').value.trim();
             const password = document.getElementById('regPassword').value.trim();
 
-            if (fullname === "" || username === "" || password === "") {
-                alert("⚠️ Vui lòng điền đầy đủ tất cả thông tin đăng ký!");
+            if (!fullname || !username || !password) {
+                alert("⚠️ Vui lòng điền đầy đủ tất cả thông tin!");
                 return;
             }
 
@@ -107,15 +113,14 @@
             }
         }
 
-        // 2. XỬ LÝ ĐĂNG NHẬP
+        // 2. XỬ LÝ ĐĂNG NHẬP VÀ ĐỔI GIAO DIỆN PREMIUM
         async function handleLogin(event) {
-            if (event) event.preventDefault(); 
-            
+            if (event) event.preventDefault();
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
 
-            if (username === "" || password === "") {
-                alert("⚠️ Vui lòng nhập tài khoản và mật khẩu để đăng nhập!");
+            if (!username || !password) {
+                alert("⚠️ Vui lòng nhập đầy đủ tài khoản & mật khẩu!");
                 return;
             }
 
@@ -128,49 +133,242 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    alert("🎉 Đăng nhập thành công! Hệ thống đám mây đã thông suốt.");
+                    alert("🎉 Đăng nhập thành công! Đang tải kho dữ liệu tài chính...");
+                    const displayUser = data.fullname || username;
                     
-                    // Lấy tên hiển thị từ dữ liệu server trả về hoặc dùng tạm username
-                    const displayUser = data.fullname || username; 
+                    // Ẩn Header cũ để mở rộng không gian ứng dụng
+                    document.getElementById('mainHeader').classList.add('hidden');
                     
-                    // THỰC HIỆN BIẾN ĐỔI GIAO DIỆN - THẾ CHỖ MÀN HÌNH ĐĂNG NHẬP THÀNH DASHBOARD
-                    document.getElementById('mainContainer').innerHTML = `
-                        <div class="max-w-md w-full mx-auto bg-white p-8 rounded-3xl shadow-xl border border-slate-100 text-center transition-all">
-                            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">
-                                <i class="fa-solid fa-circle-user"></i>
-                            </div>
-                            <h2 class="text-2xl font-extrabold text-slate-800">Xin chào, ${displayUser}!</h2>
-                            <p class="text-slate-400 text-sm mt-1 font-medium">Chào mừng bạn đã truy cập Hệ Thống Thành Viên</p>
-                            
-                            <div class="mt-6 p-5 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl text-left shadow-lg">
-                                <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Số dư tài khoản ví</div>
-                                <div class="text-3xl font-black text-white mt-1">5,000,000 đ</div>
-                                <div class="text-xs text-emerald-400 mt-2 flex items-center gap-1 font-medium">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Cloud API Connected
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-3 mt-4">
-                                <button onclick="alert('Tính năng nạp tiền trực tuyến đang được nâng cấp!')" class="p-3 bg-slate-50 border border-slate-100 hover:bg-slate-100 font-bold text-slate-700 rounded-xl text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5">
-                                    <i class="fa-solid fa-circle-arrow-down text-blue-500"></i> Nạp tiền
-                                </button>
-                                <button onclick="alert('Tính năng chuyển khoản đang được nâng cấp!')" class="p-3 bg-slate-50 border border-slate-100 hover:bg-slate-100 font-bold text-slate-700 rounded-xl text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5">
-                                    <i class="fa-solid fa-circle-arrow-up text-emerald-500"></i> Chuyển tiền
-                                </button>
-                            </div>
-
-                            <button onclick="location.reload()" class="mt-8 text-sm font-bold text-slate-400 hover:text-red-500 transition-all cursor-pointer flex items-center justify-center gap-1.5 mx-auto">
-                                <i class="fa-solid fa-power-off"></i> Đăng xuất ứng dụng
-                            </button>
-                        </div>
-                    `;
-
+                    // Thay đổi cấu trúc container chính thành Dashboard xịn sò rộng rãi
+                    const container = document.getElementById('mainContainer');
+                    container.className = "w-full mx-auto px-4 py-6 flex-grow max-w-6xl";
+                    
+                    // Kết xuất giao diện Dashboard điều khiển tài chính
+                    renderDashboard(displayUser);
+                    // Hiển thị danh sách bảng dữ liệu giao dịch ban đầu
+                    renderTransactionTable();
                 } else {
                     alert("❌ " + data.message);
                 }
             } catch (error) {
                 alert("❌ Lỗi kết nối đám mây: " + error.message);
             }
+        }
+
+        // 3. HÀM HIỂN THỊ GIAO DIỆN CHÍNH (DASHBOARD)
+        function renderDashboard(user) {
+            document.getElementById('mainContainer').innerHTML = `
+                <div class="grid lg:grid-cols-3 gap-6 items-start">
+                    
+                    <div class="space-y-6 lg:col-span-1">
+                        <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden border border-indigo-500/10">
+                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl"></div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm"><i class="fa-solid fa-crown text-amber-400"></i></div>
+                                    <span class="text-sm font-medium text-slate-300">${user}</span>
+                                </div>
+                                <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold px-2 py-0.5 rounded-full tracking-wider uppercase">Live Connection</span>
+                            </div>
+                            <div class="mt-8">
+                                <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">Số dư khả dụng</span>
+                                <div id="balanceDisplay" class="text-3xl font-black tracking-tight mt-0.5">${currentBalance.toLocaleString('vi-VN')} đ</div>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-white/10 flex justify-between text-xs text-slate-400">
+                                <span>Thành viên: Bạch Kim</span>
+                                <span>ID: #948271</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200/60">
+                            <h3 id="formActionTitle" class="text-md font-bold text-slate-800 flex items-center gap-2 mb-4">
+                                <i class="fa-solid fa-square-plus text-blue-500"></i> Ghi Chép Thu Chi Mới
+                            </h3>
+                            <input type="hidden" id="txId">
+                            <div class="space-y-3.5">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Tên mục giao dịch</label>
+                                    <input type="text" id="txTitle" placeholder="Ví dụ: Tiền chợ, Mua sắm..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm bg-slate-50/50">
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Số tiền (đ)</label>
+                                        <input type="number" id="txAmount" placeholder="50000" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm bg-slate-50/50">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Phân loại</label>
+                                        <select id="txType" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm bg-slate-50/50">
+                                            <option value="expense">📉 Khoản Chi Out</option>
+                                            <option value="income">📈 Khoản Thu In</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="saveTransaction()" class="w-full mt-2 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 shadow-md shadow-slate-800/10 cursor-pointer">
+                                    <i class="fa-solid fa-floppy-disk"></i> Lưu Giao Dịch
+                                </button>
+                                <button id="cancelEditBtn" type="button" onclick="resetForm()" class="w-full text-center text-[11px] text-slate-400 font-bold hover:text-slate-600 hidden">
+                                    Hủy bỏ chế độ chỉnh sửa
+                                </button>
+                            </div>
+                        </div>
+
+                        <button onclick="location.reload()" class="w-full py-2.5 text-center text-xs text-slate-400 font-bold hover:text-red-500 border border-dashed border-slate-300 rounded-xl transition-all cursor-pointer">
+                            <i class="fa-solid fa-power-off"></i> Đăng xuất tài khoản an toàn
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200/60 overflow-hidden">
+                            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-list-check text-indigo-500"></i>
+                                    <h3 class="text-sm font-bold text-slate-800">Sổ Nhật Ký Quản Lý Thu Chi (CRUD)</h3>
+                                </div>
+                                <span class="text-[11px] font-bold text-slate-400 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">Tổng: <span id="txCount" class="text-indigo-600">3</span> bản ghi</span>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/30">
+                                            <th class="py-3 px-6">Mục nội dung</th>
+                                            <th class="py-3 px-6">Phân loại</th>
+                                            <th class="py-3 px-4 text-right">Số tiền</th>
+                                            <th class="py-3 px-6 text-center">Hành động chỉnh sửa</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactionList" class="divide-y divide-slate-100 text-sm">
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            `;
+        }
+
+        // 4. HÀM READ - RENDER BẢNG DỮ LIỆU LÊN MÀN HÌNH
+        function renderTransactionTable() {
+            const listContainer = document.getElementById('transactionList');
+            if (!listContainer) return;
+
+            listContainer.innerHTML = '';
+            let incomeTotal = 0;
+            let expenseTotal = 0;
+
+            transactions.forEach(tx => {
+                if (tx.type === 'income') incomeTotal += tx.amount;
+                if (tx.type === 'expense') expenseTotal += tx.amount;
+
+                const badge = tx.type === 'income' 
+                    ? '<span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">Khoản Thu In</span>'
+                    : '<span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-50 text-rose-600 border border-rose-200">Khoản Chi Out</span>';
+
+                const amountColor = tx.type === 'income' ? 'text-emerald-600 font-bold' : 'text-slate-700 font-medium';
+                const sign = tx.type === 'income' ? '+' : '-';
+
+                listContainer.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition-all">
+                        <td class="py-3.5 px-6 font-semibold text-slate-800">
+                            ${tx.title}
+                            <div class="text-[10px] text-slate-400 font-normal mt-0.5">${tx.date}</div>
+                        </td>
+                        <td class="py-3.5 px-6">${badge}</td>
+                        <td class="py-3.5 px-4 text-right ${amountColor} font-mono">${sign}${tx.amount.toLocaleString('vi-VN')} đ</td>
+                        <td class="py-3.5 px-6 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="editTransaction(${tx.id})" class="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all cursor-pointer text-xs" title="Sửa dữ liệu">
+                                    <i class="fa-solid fa-pen-to-square"></i> Sửa
+                                </button>
+                                <button onclick="deleteTransaction(${tx.id})" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer text-xs" title="Xóa dữ liệu">
+                                    <i class="fa-solid fa-trash-can"></i> Xóa
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Tính toán lại số dư thực tế dựa trên CRUD mới
+            currentBalance = 15000000 + incomeTotal - expenseTotal;
+            document.getElementById('balanceDisplay').innerText = `${currentBalance.toLocaleString('vi-VN')} đ`;
+            document.getElementById('txCount').innerText = transactions.length;
+        }
+
+        // 5. HÀM CREATE & UPDATE - LƯU HOẶC SỬA MỤC GIAO DỊCH
+        function saveTransaction() {
+            const idInput = document.getElementById('txId').value;
+            const title = document.getElementById('txTitle').value.trim();
+            const amount = parseFloat(document.getElementById('txAmount').value);
+            const type = document.getElementById('txType').value;
+
+            if (!title || isNaN(amount) || amount <= 0) {
+                alert("⚠️ Vui lòng nhập đầy đủ tên mục và số tiền hợp lệ lớn hơn 0!");
+                return;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+
+            if (idInput === "") {
+                // CHẾ ĐỘ CREATE: THÊM MỚI BẢN GHI
+                const newTx = {
+                    id: Date.now(), // Tạo ID độc bản bằng timestamp
+                    title: title,
+                    amount: amount,
+                    type: type,
+                    date: today
+                };
+                transactions.unshift(newTx); // Đẩy lên dòng đầu bảng
+            } else {
+                // CHẾ ĐỘ UPDATE: CẬP NHẬT LẠI BẢN GHI ĐANG SỬA
+                const targetId = parseInt(idInput);
+                const index = transactions.findIndex(t => t.id === targetId);
+                if (index !== -1) {
+                    transactions[index].title = title;
+                    transactions[index].amount = amount;
+                    transactions[index].type = type;
+                }
+            }
+
+            // Đồng bộ kết xuất lại màn hình và xóa sạch form nhập liệu
+            renderTransactionTable();
+            resetForm();
+        }
+
+        // 6. HÀM CHUYỂN FORM SANG CHẾ ĐỘ UPDATE (SỬA)
+        function editTransaction(id) {
+            const tx = transactions.find(t => t.id === id);
+            if (!tx) return;
+
+            // Đổ ngược dữ liệu lên form để người dùng sửa đổi
+            document.getElementById('txId').value = tx.id;
+            document.getElementById('txTitle').value = tx.title;
+            document.getElementById('txAmount').value = tx.amount;
+            document.getElementById('txType').value = tx.type;
+
+            // Biến hóa tiêu đề form để người dùng nhận diện đang sửa
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-500"></i> Đang Hiệu Chỉnh Mục Dữ Liệu`;
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+        }
+
+        // 7. HÀM DELETE - XÓA BẢN GHI
+        function deleteTransaction(id) {
+            if (confirm("🗑️ Bạn có chắc chắn muốn xóa mục lịch sử ghi chép này không?")) {
+                transactions = transactions.filter(t => t.id !== id);
+                renderTransactionTable();
+                resetForm();
+            }
+        }
+
+        // Hàm Reset làm sạch form nhập liệu đưa về mặc định ban đầu
+        function resetForm() {
+            document.getElementById('txId').value = '';
+            document.getElementById('txTitle').value = '';
+            document.getElementById('txAmount').value = '';
+            document.getElementById('txType').value = 'expense';
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-square-plus text-blue-500"></i> Ghi Chép Thu Chi Mới`;
+            document.getElementById('cancelEditBtn').classList.add('hidden');
         }
     </script>
 </body>
