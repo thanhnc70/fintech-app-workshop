@@ -107,47 +107,71 @@
             }
         }
 
-        // 2. CHỨC NĂNG ĐĂNG NHẬP
-        async function handleLogin(event) {
-            if (event) event.preventDefault();
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
+        // 2. CHỨC NĂNG ĐĂNG NHẬP (ĐÃ CẬP NHẬT BẮT LỖI TUYỆT ĐỐI)
+async function handleLogin(event) {
+    if (event) event.preventDefault();
+    
+    const usernameInput = document.getElementById('loginUsername');
+    const passwordInput = document.getElementById('loginPassword');
+    
+    if (!usernameInput || !passwordInput) {
+        alert("❌ Lỗi hệ thống: Không tìm thấy các ô nhập liệu HTML!");
+        return;
+    }
 
-            if (!username || !password) {
-                alert("⚠️ Vui lòng nhập đầy đủ tài khoản & mật khẩu!");
-                return;
-            }
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
 
-            try {
-                const response = await fetch(`${API_URL}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    alert("🎉 Kết nối ví thành công! Đang tải dữ liệu từ Neon Database...");
-                    const displayUser = data.fullname || username;
-                    currentUserId = data.userId || data.id; 
-                    
-                    // Ẩn Header cũ, định hình lại không gian hiển thị Dashboard
-                    document.getElementById('mainHeader').classList.add('hidden');
-                    const container = document.getElementById('mainContainer');
-                    container.className = "w-full mx-auto px-4 py-6 flex-grow max-w-6xl";
-                    
-                    // Gọi hàm sinh giao diện Dashboard
-                    renderDashboard(displayUser);
-                    
-                    // Đồng bộ dữ liệu thực tế từ Neon SQL về bảng
-                    fetchTransactions();
-                } else {
-                    alert("❌ " + data.message);
-                }
-            } catch (error) {
-                alert("❌ Lỗi kết nối máy chủ: " + error.message);
-            }
+    if (!username || !password) {
+        alert("⚠️ Vui lòng nhập đầy đủ tài khoản & mật khẩu!");
+        return;
+    }
+
+    try {
+        console.log("Đang gửi yêu cầu đăng nhập tới:", `${API_URL}/login`);
+        
+        const response = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        // Kiểm tra xem phản hồi từ server có phản hồi lỗi HTTP (401, 500, v.v.) không
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            alert(`❌ Máy chủ từ chối (Mã lỗi ${response.status}): ${errorData.message || 'Sai tài khoản hoặc mật khẩu!'}`);
+            return;
         }
+
+        const data = await response.json();
+        
+        if (data.success) {
+            alert("🎉 Kết nối ví thành công! Đang tải dữ liệu từ Neon Database...");
+            const displayUser = data.fullname || username;
+            currentUserId = data.userId || data.id; 
+            
+            // Ẩn Header cũ, định hình lại không gian hiển thị Dashboard
+            document.getElementById('mainHeader').classList.add('hidden');
+            const container = document.getElementById('mainContainer');
+            container.className = "w-full mx-auto px-4 py-6 flex-grow max-w-6xl";
+            
+            // Gọi hàm sinh giao diện Dashboard
+            renderDashboard(displayUser);
+            
+            // Đồng bộ dữ liệu thực tế từ Neon SQL về bảng
+            fetchTransactions();
+        } else {
+            alert("❌ Đăng nhập thất bại: " + data.message);
+        }
+    } catch (error) {
+        // KHẮC PHỤC TRIỆT ĐỂ: Hiện thẳng lỗi kết nối lên màn hình thay vì đứng im
+        console.error("Chi tiết lỗi kết nối máy chủ:", error);
+        alert(`🚨 KHÔNG THỂ KẾT NỐI MÁY CHỦ!\n\nLý do: Tên miền Render đang khởi động (mất 1-2 phút) hoặc bị trình duyệt chặn giao thức.\nChi tiết: ${error.message}`);
+    }
+}
 
         // 3. HÀM SINH CẤU TRÚC GIAO DIỆN DASHBOARD
         function renderDashboard(user) {
