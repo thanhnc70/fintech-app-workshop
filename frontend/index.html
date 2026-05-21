@@ -261,15 +261,18 @@
 
         // 4. HÀM READ - LẤY DỮ LIỆU TỪ NEON DATABASE
         async function fetchTransactions() {
-            try {
-                const response = await fetch(`${API_URL}/transactions?userId=${currentUserId}`);
-                const data = await response.json();
-                transactions = data.transactions || [];
-                renderTransactionTable();
-            } catch (error) {
-                console.error("Lỗi tải danh sách giao dịch:", error);
-            }
-        }
+    try {
+        const response = await fetch(`${API_URL}/transactions?userId=${currentUserId}`);
+        const data = await response.json();
+        
+        // Sửa ở đây: backend trả về { transactions: [...] }
+        transactions = data.transactions || data || [];   // fallback nhiều trường hợp
+        renderTransactionTable();
+    } catch (error) {
+        console.error("Lỗi tải danh sách giao dịch:", error);
+        alert("Không thể tải danh sách giao dịch từ NeonDB");
+    }
+}
 
         // 5. RENDER BẢNG VÀ TÍNH SỐ DƯ THỰC TẾ (ĐOẠN CODE ĐÃ ĐƯỢC VIẾT TIẾP VÀ SỬA LỖI)
         function renderTransactionTable() {
