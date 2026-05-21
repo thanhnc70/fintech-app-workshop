@@ -100,12 +100,18 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password, fullname })
                 });
-                const data = await response.json();
-                alert(data.message);
-            } catch (error) {
-                alert("❌ Lỗi kết nối đám mây: " + error.message);
-            }
-        }
+                // Thay thế đoạn xử lý kết quả login cũ của bạn bằng đoạn này
+const data = await response.json();
+if (data.success) {
+    // Lưu toàn bộ thông tin user (gồm id, username, fullname) vào localStorage
+    localStorage.setItem('user', JSON.stringify(data.user));
+    
+    // Tải lại trang để áp dụng trạng thái đăng nhập
+    window.location.reload();
+} else {
+    alert(data.message || "Đăng nhập thất bại!");
+}
+
 
         // 2. CHỨC NĂNG ĐĂNG NHẬP
         async function handleLogin(event) {
