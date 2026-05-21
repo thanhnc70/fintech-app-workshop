@@ -9,60 +9,101 @@
 </head>
 <body class="bg-zinc-950 text-white min-h-screen">
     <div id="app" class="max-w-7xl mx-auto p-6">
-        <!-- Login/Register Screen -->
+
+        <!-- AUTH SCREEN -->
         <div id="authScreen">
             <div class="max-w-md mx-auto mt-20">
                 <div class="text-center mb-10">
-                    <div class="w-16 h-16 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-4">
-                        💰
-                    </div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-4">💰</div>
                     <h1 class="text-4xl font-bold">Ví Thông Minh</h1>
-                    <p class="text-zinc-400 mt-2">Quản lý tài chính cá nhân • Neon Cloud</p>
+                    <p class="text-zinc-400">Quản lý tài chính • Neon Cloud</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 mb-8">
-                    <button onclick="showLogin()" id="tabLogin"
-                            class="py-3 font-medium rounded-2xl bg-white text-black">Đăng Nhập</button>
-                    <button onclick="showRegister()" id="tabRegister"
-                            class="py-3 font-medium rounded-2xl bg-zinc-800 hover:bg-zinc-700">Đăng Ký</button>
+                    <button onclick="showLogin()" class="py-3 font-medium rounded-2xl bg-white text-black">Đăng Nhập</button>
+                    <button onclick="showRegister()" class="py-3 font-medium rounded-2xl bg-zinc-800 hover:bg-zinc-700">Đăng Ký</button>
                 </div>
 
-                <!-- Login Form -->
                 <div id="loginForm">
-                    <div class="space-y-4">
-                        <input id="loginUsername" type="text" placeholder="Tên tài khoản" 
-                               class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-violet-500">
-                        <input id="loginPassword" type="password" placeholder="Mật khẩu" 
-                               class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-violet-500">
-                        <button onclick="handleLogin()" 
-                                class="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-emerald-400 transition">
-                            Đăng Nhập
-                        </button>
-                    </div>
+                    <input id="loginUsername" type="text" placeholder="Tên tài khoản" class="w-full mb-3 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4">
+                    <input id="loginPassword" type="password" placeholder="Mật khẩu" class="w-full mb-6 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4">
+                    <button onclick="handleLogin()" class="w-full bg-white text-black font-bold py-4 rounded-2xl">Đăng Nhập</button>
                 </div>
 
-                <!-- Register Form -->
                 <div id="registerForm" class="hidden">
-                    <div class="space-y-4">
-                        <input id="regFullname" type="text" placeholder="Họ và tên" 
-                               class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-violet-500">
-                        <input id="regUsername" type="text" placeholder="Tên tài khoản" 
-                               class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-violet-500">
-                        <input id="regPassword" type="password" placeholder="Mật khẩu" 
-                               class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-violet-500">
-                        <button onclick="handleRegister()" 
-                                class="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-emerald-400 transition">
-                            Tạo Tài Khoản
-                        </button>
-                    </div>
+                    <input id="regFullname" type="text" placeholder="Họ và tên" class="w-full mb-3 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4">
+                    <input id="regUsername" type="text" placeholder="Tên tài khoản" class="w-full mb-3 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4">
+                    <input id="regPassword" type="password" placeholder="Mật khẩu" class="w-full mb-6 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4">
+                    <button onclick="handleRegister()" class="w-full bg-white text-black font-bold py-4 rounded-2xl">Tạo Tài Khoản</button>
                 </div>
             </div>
         </div>
 
-        <!-- Dashboard -->
+        <!-- DASHBOARD -->
         <div id="dashboardScreen" class="hidden">
-            <!-- Nội dung dashboard đẹp sẽ ở đây -->
-            <div id="dashboardContent"></div>
+            <header class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold">Ví Thông Minh</h1>
+                    <p class="text-zinc-400">Xin chào, <span id="userNameHeader" class="font-semibold"></span></p>
+                </div>
+                <button onclick="logout()" class="px-6 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-2xl text-sm font-medium">
+                    Đăng xuất
+                </button>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Panel -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-zinc-900 rounded-3xl p-8">
+                        <p class="text-zinc-400">Số dư khả dụng</p>
+                        <h2 id="balanceDisplay" class="text-5xl font-bold mt-2">0 đ</h2>
+                        <div class="grid grid-cols-2 gap-4 mt-8">
+                            <div class="bg-emerald-500/10 p-4 rounded-2xl">
+                                <p class="text-emerald-400 text-sm">TỔNG THU</p>
+                                <p id="totalIncome" class="text-xl font-semibold">0 đ</p>
+                            </div>
+                            <div class="bg-rose-500/10 p-4 rounded-2xl">
+                                <p class="text-rose-400 text-sm">TỔNG CHI</p>
+                                <p id="totalExpense" class="text-xl font-semibold">0 đ</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add / Edit Form -->
+                    <div class="bg-zinc-900 rounded-3xl p-6">
+                        <h3 id="formTitle" class="font-semibold mb-4">+ Ghi chép mới</h3>
+                        <input type="hidden" id="editId">
+                        <input id="txTitle" placeholder="Nội dung giao dịch" class="w-full mb-3 bg-zinc-800 rounded-2xl px-5 py-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <input id="txAmount" type="number" placeholder="Số tiền" class="bg-zinc-800 rounded-2xl px-5 py-4">
+                            <select id="txType" class="bg-zinc-800 rounded-2xl px-5 py-4">
+                                <option value="income">📈 Khoản Thu</option>
+                                <option value="expense">📉 Khoản Chi</option>
+                            </select>
+                        </div>
+                        <button onclick="saveTransaction()" class="w-full mt-4 bg-white text-black font-bold py-4 rounded-2xl">💾 Lưu Giao Dịch</button>
+                        <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden w-full mt-2 text-zinc-400 hover:text-white">Hủy chỉnh sửa</button>
+                    </div>
+                </div>
+
+                <!-- Transaction List -->
+                <div class="lg:col-span-8">
+                    <div class="bg-zinc-900 rounded-3xl p-6">
+                        <h2 class="text-xl font-semibold mb-4">Sổ nhật ký thu chi</h2>
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-zinc-400 border-b border-zinc-700">
+                                    <th class="py-4 text-left">Nội dung</th>
+                                    <th class="py-4">Loại</th>
+                                    <th class="py-4 text-right">Số tiền</th>
+                                    <th class="py-4 text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionList" class="divide-y divide-zinc-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -70,6 +111,7 @@
         const API_URL = "https://fintech-backend-api-t83c.onrender.com/api";
         let currentUserId = null;
         let currentUserName = "";
+        let transactions = [];
 
         function showLogin() {
             document.getElementById('loginForm').classList.remove('hidden');
@@ -86,7 +128,7 @@
             const username = document.getElementById('regUsername').value.trim();
             const password = document.getElementById('regPassword').value.trim();
 
-            if (!fullname || !username || !password) return alert("Vui lòng điền đầy đủ thông tin");
+            if (!fullname || !username || !password) return alert("Vui lòng điền đầy đủ!");
 
             try {
                 const res = await fetch(`${API_URL}/register`, {
@@ -95,18 +137,16 @@
                     body: JSON.stringify({ fullname, username, password })
                 });
                 const data = await res.json();
-                alert(data.message || "Đăng ký thành công! Hãy đăng nhập.");
+                alert(data.message || "Đăng ký thành công!");
                 showLogin();
-            } catch(e) {
-                alert("Lỗi kết nối server");
-            }
+            } catch(e) { alert("Lỗi server"); }
         }
 
         async function handleLogin() {
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
 
-            if (!username || !password) return alert("Vui lòng nhập tài khoản và mật khẩu");
+            if (!username || !password) return alert("Vui lòng nhập tài khoản và mật khẩu!");
 
             try {
                 const res = await fetch(`${API_URL}/login`, {
@@ -120,95 +160,46 @@
                     currentUserId = data.userId;
                     currentUserName = data.fullname || username;
 
-                    // Chuyển sang Dashboard
                     document.getElementById('authScreen').classList.add('hidden');
                     document.getElementById('dashboardScreen').classList.remove('hidden');
-                    
-                    renderDashboard();
+                    document.getElementById('userNameHeader').textContent = currentUserName;
+
                     fetchTransactions();
                 } else {
-                    alert(data.message || "Sai tài khoản hoặc mật khẩu");
+                    alert(data.message || "Sai tài khoản hoặc mật khẩu!");
                 }
-            } catch(e) {
-                alert("Không thể kết nối server. Kiểm tra backend có đang chạy không?");
-            }
+            } catch(e) { alert("Không kết nối được server"); }
         }
 
-        function renderDashboard() {
-            document.getElementById('dashboardContent').innerHTML = `
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <!-- Phần sidebar và form -->
-                    <div class="lg:col-span-4 space-y-6">
-                        <div class="bg-zinc-900 rounded-3xl p-8 text-center">
-                            <h2 class="text-2xl font-bold">${currentUserName}</h2>
-                            <p class="text-emerald-400 mt-2">ID: #${currentUserId}</p>
-                            <div class="mt-8">
-                                <p class="text-zinc-400">Số dư khả dụng</p>
-                                <h1 id="balanceDisplay" class="text-6xl font-bold mt-2">0 đ</h1>
-                            </div>
-                        </div>
-                        <!-- Form thêm giao dịch -->
-                        <div class="bg-zinc-900 rounded-3xl p-6">
-                            <h3 class="font-semibold mb-4">+ Ghi chép mới</h3>
-                            <input id="txTitle" placeholder="Nội dung giao dịch" class="w-full mb-3 bg-zinc-800 rounded-2xl px-5 py-4">
-                            <div class="grid grid-cols-2 gap-3">
-                                <input id="txAmount" type="number" placeholder="Số tiền" class="bg-zinc-800 rounded-2xl px-5 py-4">
-                                <select id="txType" class="bg-zinc-800 rounded-2xl px-5 py-4">
-                                    <option value="income">Khoản Thu</option>
-                                    <option value="expense">Khoản Chi</option>
-                                </select>
-                            </div>
-                            <button onclick="saveTransaction()" class="w-full mt-4 bg-white text-black font-bold py-4 rounded-2xl">Lưu Giao Dịch</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Bảng giao dịch -->
-                    <div class="lg:col-span-8">
-                        <div class="bg-zinc-900 rounded-3xl p-6">
-                            <h2 class="text-xl font-semibold mb-4">Sổ nhật ký thu chi</h2>
-                            <table class="w-full">
-                                <thead>
-                                    <tr class="text-zinc-400 border-b border-zinc-700">
-                                        <th class="py-4 text-left">Nội dung</th>
-                                        <th class="py-4">Loại</th>
-                                        <th class="py-4 text-right">Số tiền</th>
-                                        <th class="py-4 text-center">Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="transactionList" class="divide-y divide-zinc-800"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Các hàm fetch, save, delete... (giữ nguyên như trước)
         async function fetchTransactions() {
             try {
                 const res = await fetch(`${API_URL}/transactions?userId=${currentUserId}`);
                 const data = await res.json();
-                window.transactions = data.transactions || [];
-                renderTransactionTable();
+                transactions = data.transactions || [];
+                renderTransactions();
             } catch(e) {}
         }
 
-        function renderTransactionTable() {
+        function renderTransactions() {
             const tbody = document.getElementById('transactionList');
             tbody.innerHTML = '';
-            let balance = 0;
+            let balance = 0, income = 0, expense = 0;
 
-            window.transactions.forEach(tx => {
+            transactions.forEach(tx => {
                 const amt = parseFloat(tx.amount);
                 const isIncome = tx.type === 'income';
-                if (isIncome) balance += amt; else balance -= amt;
+                if (isIncome) { income += amt; balance += amt; } 
+                else { expense += amt; balance -= amt; }
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="py-4">${tx.title}</td>
                     <td><span class="px-4 py-1 rounded-full text-xs ${isIncome ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">${isIncome ? 'Thu' : 'Chi'}</span></td>
                     <td class="text-right font-medium ${isIncome ? 'text-emerald-400' : 'text-rose-400'}">${isIncome ? '+' : '-'}${amt.toLocaleString()} đ</td>
-                    <td class="text-center text-rose-400 cursor-pointer" onclick="deleteTransaction(${tx.id})">Xóa</td>
+                    <td class="text-center space-x-3">
+                        <button onclick="editTransaction(${tx.id})" class="text-blue-400 hover:text-blue-300">Sửa</button>
+                        <button onclick="deleteTransaction(${tx.id})" class="text-rose-400 hover:text-rose-300">Xóa</button>
+                    </td>
                 `;
                 tbody.appendChild(row);
             });
@@ -217,21 +208,48 @@
         }
 
         async function saveTransaction() {
-            const title = document.getElementById('txTitle').value;
+            const id = document.getElementById('editId').value;
+            const title = document.getElementById('txTitle').value.trim();
             const amount = document.getElementById('txAmount').value;
             const type = document.getElementById('txType').value;
 
-            if (!title || !amount) return alert("Vui lòng nhập đầy đủ");
+            if (!title || !amount) return alert("Vui lòng nhập đầy đủ!");
 
-            await fetch(`${API_URL}/transactions`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ userId: currentUserId, title, amount: parseFloat(amount), type })
-            });
-            alert("Lưu thành công!");
+            const url = id ? `${API_URL}/transactions/${id}` : `${API_URL}/transactions`;
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                await fetch(url, {
+                    method: method,
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ userId: currentUserId, title, amount: parseFloat(amount), type })
+                });
+
+                alert(id ? "✅ Cập nhật thành công!" : "✅ Thêm thành công!");
+                cancelEdit();
+                fetchTransactions();
+            } catch(e) { alert("Lỗi khi lưu"); }
+        }
+
+        function editTransaction(id) {
+            const tx = transactions.find(t => t.id === id);
+            if (!tx) return;
+
+            document.getElementById('editId').value = tx.id;
+            document.getElementById('txTitle').value = tx.title;
+            document.getElementById('txAmount').value = tx.amount;
+            document.getElementById('txType').value = tx.type;
+
+            document.getElementById('formTitle').textContent = `✏️ Chỉnh sửa giao dịch #${id}`;
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+        }
+
+        function cancelEdit() {
+            document.getElementById('editId').value = '';
             document.getElementById('txTitle').value = '';
             document.getElementById('txAmount').value = '';
-            fetchTransactions();
+            document.getElementById('formTitle').textContent = '+ Ghi chép mới';
+            document.getElementById('cancelEditBtn').classList.add('hidden');
         }
 
         async function deleteTransaction(id) {
@@ -242,8 +260,14 @@
         }
 
         function logout() {
-            location.reload();
+            document.getElementById('dashboardScreen').classList.add('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
         }
+
+        // Khởi chạy
+        window.onload = () => showLogin();
     </script>
 </body>
 </html>
