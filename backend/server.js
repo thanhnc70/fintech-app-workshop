@@ -65,23 +65,18 @@ app.post('/api/login', async (req, res) => {
 });
 
 // 3. API LẤY DANH SÁCH GIAO DỊCH (ĐÃ THÊM CỘT TYPE VÀO SELECT)
+// Ví dụ cấu trúc đúng
 app.get('/api/transactions', async (req, res) => {
+    const { userId } = req.query; // hoặc lấy từ session/token
     try {
-        const userId = req.query.userId || req.query.userid; 
-        
-        if (!userId) {
-            return res.status(400).json({ success: false, message: "Thiếu thông tin ID người dùng!" });
-        }
-
-        // QUAN TRỌNG: Đã bổ sung lấy cột 'type' từ bảng transactions về cho Frontend xử lý
         const result = await pool.query(
             'SELECT id, title, amount, type, createdat FROM transactions WHERE userid = $1 ORDER BY createdat DESC', 
             [userId]
         );
-        
-        res.json({ success: true, transactions: result.rows });
+        res.json(result.rows);
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
+        console.error(err);
+        res.status(500).send("Lỗi server");
     }
 });
 
