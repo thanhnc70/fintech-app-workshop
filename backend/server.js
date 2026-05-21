@@ -20,7 +20,7 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false } // Bắt buộc đảm bảo kết nối bảo mật đám mây
 });
 
-// 1. API ĐĂNG KÝ (Sửa bảng và trường về chữ thường tương thích PostgreSQL)
+// 1. API ĐĂNG KÝ
 app.post('/api/register', async (req, res) => {
     try {
         const { username, password, fullname } = req.body;
@@ -39,7 +39,7 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// 2. API ĐĂNG NHẬP (Khắc phục lỗi lệch cấu trúc dữ liệu khiến frontend báo undefined)
+// 2. API ĐĂNG NHẬP
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -49,8 +49,7 @@ app.post('/api/login', async (req, res) => {
         );
         
         if (result.rows.length > 0) {
-            // Trả về cấu trúc rõ ràng bao gồm cả các key thông dụng (id, userId, fullname) 
-            // giúp Frontend đọc kiểu gì cũng trúng đích, không bao giờ bị lỗi 'undefined'
+            // Trả về cả 'id' lẫn 'userId' đảm bảo Frontend đọc kiểu gì cũng trúng đích
             res.json({ 
                 success: true, 
                 id: result.rows[0].id,
@@ -66,13 +65,14 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// 3. API LẤY DANH SÁCH GIAO DỊCH (Sửa mệnh đề WHERE userid chữ thường)
+// 3. API LẤY DANH SÁCH GIAO DỊCH
 app.get('/api/transactions', async (req, res) => {
     try {
-        const { userId } = req.query; // Nhận userId từ chuỗi query (?userId=...) của frontend
+        // Bẫy lỗi: Nhận cả trường hợp Frontend gửi lên viết hoa hoặc viết thường (?userId=... hoặc ?userid=...)
+        const userId = req.query.userId || req.query.userid; 
         
         if (!userId) {
-            return res.status(400).json({ success: false, message: "Thiếu thông tin userId!" });
+            return res.status(400).json({ success: false, message: "Thiếu thông tin ID người dùng!" });
         }
 
         const result = await pool.query(
@@ -80,34 +80,44 @@ app.get('/api/transactions', async (req, res) => {
             [userId]
         );
         
-        // Trả về mảng bọc trong một đối tượng chứa key transactions trùng khớp cấu trúc đọc của Frontend
         res.json({ success: true, transactions: result.rows });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// 4. API THÊM MỚI GIAO DỊCH (Khắc phục lỗi ghi nhận dữ liệu biến thành NULL vào database)
+// 4. API THÊM MỚI GIAO DỊCH (SỬA ĐỔI CHÍNH TẠI ĐÂY)
 app.post('/api/transactions', async (req, res) => {
     try {
-        const { userId, title, amount } = req.body;
+        // Bẫy lỗi: Chấp nhận cả userId (CamelCase) hoặc userid (viết thường) từ Frontend đẩy lên
+        const userId = req.body.userId || req.body.userid;
+        const { title, amount } = req.body;
         
         if (!userId || !title || amount === undefined) {
-            return res.status(400).json({ success: false, message: "Thiếu dữ liệu đầu vào!" });
+            return res.status(400).json({ success: false, message: "Thiếu dữ liệu đầu vào (userId, title hoặc amount)!" });
         }
 
-        // Ép chuẩn chữ thường hoàn toàn cho trường 'userid'
+        // Ép kiểu dữ liệu phòng hờ trường hợp Frontend gửi chuỗi văn bản sai định dạng số
+        const parsedUserId = parseInt(userId, 10);
+        const parsedAmount = parseFloat(amount);
+
+        if (isNaN(parsedUserId)) {
+            return res.status(400).json({ success: false, message: "ID người dùng không hợp lệ (Phải là số)!" });
+        }
+
+        // Thực hiện ghi vào database
         await pool.query(
             'INSERT INTO transactions (userid, title, amount, createdat) VALUES ($1, $2, $3, NOW())', 
-            [userId, title, amount]
+            [parsedUserId, title, parsedAmount]
         );
+        
         res.json({ success: true, message: "Lưu giao dịch thành công!" });
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
+        res.status(500).json({ success: false, message: "Lỗi hệ thống: " + err.message });
     }
 });
 
-// 5. API CẬP NHẬT / SỬA (Chuẩn hóa chữ thường cho cột id)
+// 5. API CẬP NHẬT / SỬA 
 app.put('/api/transactions/:id', async (req, res) => {
     try {
         const { title, amount } = req.body;
@@ -121,7 +131,7 @@ app.put('/api/transactions/:id', async (req, res) => {
     }
 });
 
-// 6. API XÓA (Chuẩn hóa chữ thường cho cột id)
+// 6. API XÓA 
 app.delete('/api/transactions/:id', async (req, res) => {
     try {
         await pool.query('DELETE FROM transactions WHERE id = $1', [req.params.id]);
