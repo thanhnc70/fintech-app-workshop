@@ -40,13 +40,31 @@ app.post('/api/register', async (req, res) => {
 });
 
 // 2. API ĐĂNG NHẬP (server.js) - Hãy sửa dòng này ở Backend của bạn
-if (result.rows.length > 0) {
-    res.json({ 
-        success: true, 
-        user: result.rows[0] // Sửa từ result.rows thành result.rows[0]
-    });
-}
+// API LOGIN - Hoàn thiện
+app.post('/api/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        
+        const result = await pool.query(
+            'SELECT id, username, fullname FROM users WHERE username = $1 AND password = $2',
+            [username, password]
+        );
 
+        if (result.rows.length > 0) {
+            const user = result.rows[0];
+            res.json({
+                success: true,
+                userId: user.id,
+                fullname: user.fullname,
+                message: "Đăng nhập thành công"
+            });
+        } else {
+            res.status(401).json({ success: false, message: "Sai tài khoản hoặc mật khẩu" });
+        }
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
 
 // 3. API LẤY DANH SÁCH GIAO DỊCH (SỬA LẠI)
 app.get('/api/transactions', async (req, res) => {
