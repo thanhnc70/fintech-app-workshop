@@ -107,71 +107,65 @@
             }
         }
 
-        // 2. CHỨC NĂNG ĐĂNG NHẬP (ĐÃ CẬP NHẬT BẮT LỖI TUYỆT ĐỐI)
-async function handleLogin(event) {
-    if (event) event.preventDefault();
-    
-    const usernameInput = document.getElementById('loginUsername');
-    const passwordInput = document.getElementById('loginPassword');
-    
-    if (!usernameInput || !passwordInput) {
-        alert("❌ Lỗi hệ thống: Không tìm thấy các ô nhập liệu HTML!");
-        return;
-    }
+        // 2. CHỨC NĂNG ĐĂNG NHẬP
+        async function handleLogin(event) {
+            if (event) event.preventDefault();
+            
+            const usernameInput = document.getElementById('loginUsername');
+            const passwordInput = document.getElementById('loginPassword');
+            
+            if (!usernameInput || !passwordInput) {
+                alert("❌ Lỗi hệ thống: Không tìm thấy các ô nhập liệu HTML!");
+                return;
+            }
 
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim();
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
 
-    if (!username || !password) {
-        alert("⚠️ Vui lòng nhập đầy đủ tài khoản & mật khẩu!");
-        return;
-    }
+            if (!username || !password) {
+                alert("⚠️ Vui lòng nhập đầy đủ tài khoản & mật khẩu!");
+                return;
+            }
 
-    try {
-        console.log("Đang gửi yêu cầu đăng nhập tới:", `${API_URL}/login`);
-        
-        const response = await fetch(`${API_URL}/login`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        });
+            try {
+                console.log("Đang gửi yêu cầu đăng nhập tới:", `${API_URL}/login`);
+                
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
 
-        // Kiểm tra xem phản hồi từ server có phản hồi lỗi HTTP (401, 500, v.v.) không
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            alert(`❌ Máy chủ từ chối (Mã lỗi ${response.status}): ${errorData.message || 'Sai tài khoản hoặc mật khẩu!'}`);
-            return;
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    alert(`❌ Máy chủ từ chối (Mã lỗi ${response.status}): ${errorData.message || 'Sai tài khoản hoặc mật khẩu!'}`);
+                    return;
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert("🎉 Kết nối ví thành công! Đang tải dữ liệu từ Neon Database...");
+                    const displayUser = data.fullname || username;
+                    currentUserId = data.userId || data.id; 
+                    
+                    document.getElementById('mainHeader').classList.add('hidden');
+                    const container = document.getElementById('mainContainer');
+                    container.className = "w-full mx-auto px-4 py-6 flex-grow max-w-6xl";
+                    
+                    renderDashboard(displayUser);
+                    fetchTransactions();
+                } else {
+                    alert("❌ Đăng nhập thất bại: " + data.message);
+                }
+            } catch (error) {
+                console.error("Chi tiết lỗi kết nối máy chủ:", error);
+                alert(`🚨 KHÔNG THỂ KẾT NỐI MÁY CHỦ!\n\nChi tiết: ${error.message}`);
+            }
         }
-
-        const data = await response.json();
-        
-        if (data.success) {
-            alert("🎉 Kết nối ví thành công! Đang tải dữ liệu từ Neon Database...");
-            const displayUser = data.fullname || username;
-            currentUserId = data.userId || data.id; 
-            
-            // Ẩn Header cũ, định hình lại không gian hiển thị Dashboard
-            document.getElementById('mainHeader').classList.add('hidden');
-            const container = document.getElementById('mainContainer');
-            container.className = "w-full mx-auto px-4 py-6 flex-grow max-w-6xl";
-            
-            // Gọi hàm sinh giao diện Dashboard
-            renderDashboard(displayUser);
-            
-            // Đồng bộ dữ liệu thực tế từ Neon SQL về bảng
-            fetchTransactions();
-        } else {
-            alert("❌ Đăng nhập thất bại: " + data.message);
-        }
-    } catch (error) {
-        // KHẮC PHỤC TRIỆT ĐỂ: Hiện thẳng lỗi kết nối lên màn hình thay vì đứng im
-        console.error("Chi tiết lỗi kết nối máy chủ:", error);
-        alert(`🚨 KHÔNG THỂ KẾT NỐI MÁY CHỦ!\n\nLý do: Tên miền Render đang khởi động (mất 1-2 phút) hoặc bị trình duyệt chặn giao thức.\nChi tiết: ${error.message}`);
-    }
-}
 
         // 3. HÀM SINH CẤU TRÚC GIAO DIỆN DASHBOARD
         function renderDashboard(user) {
@@ -216,8 +210,8 @@ async function handleLogin(event) {
                                     <div>
                                         <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Phân loại</label>
                                         <select id="txType" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm bg-slate-50/50">
-                                            <option value="expense">📉 Khoản Chi Out</option>
                                             <option value="income">📈 Khoản Thu In</option>
+                                            <option value="expense">📉 Khoản Chi Out</option>
                                         </select>
                                     </div>
                                 </div>
@@ -265,7 +259,7 @@ async function handleLogin(event) {
             `;
         }
 
-        // 4. HÀM READ - LẤY DỮ LIỆU TỪ NEON DATABASE (Đã đồng bộ query params với backend mới)
+        // 4. HÀM READ - LẤY DỮ LIỆU TỪ NEON DATABASE
         async function fetchTransactions() {
             try {
                 const response = await fetch(`${API_URL}/transactions?userId=${currentUserId}`);
@@ -277,7 +271,7 @@ async function handleLogin(event) {
             }
         }
 
-        // 5. RENDER BẢNG VÀ TÍNH SỐ DƯ THỰC TẾ (Sử dụng chuẩn thuộc tính chữ thường)
+        // 5. RENDER BẢNG VÀ TÍNH SỐ DƯ THỰC TẾ (ĐOẠN CODE ĐÃ ĐƯỢC VIẾT TIẾP VÀ SỬA LỖI)
         function renderTransactionTable() {
             const listContainer = document.getElementById('transactionList');
             if (!listContainer) return;
@@ -293,5 +287,126 @@ async function handleLogin(event) {
             }
 
             transactions.forEach(tx => {
-                const amountNum = parseFloat(tx.amount);
-                const is
+                const amountNum = parseFloat(tx.amount) || 0;
+                
+                // Đồng bộ kiểu phân loại từ database (ví dụ: 'income' hoặc 'IN' tùy thuộc backend trả về)
+                const isIncome = tx.type === 'income' || tx.type === 'IN';
+                
+                if (isIncome) {
+                    totalBalance += amountNum;
+                } else {
+                    totalBalance -= amountNum;
+                }
+
+                const typeBadge = isIncome 
+                    ? `<span class="bg-emerald-50 text-emerald-600 border border-emerald-100 text-[11px] px-2.5 py-0.5 rounded-full font-semibold">📈 Khoản Thu</span>`
+                    : `<span class="bg-rose-50 text-rose-600 border border-rose-100 text-[11px] px-2.5 py-0.5 rounded-full font-semibold">📉 Khoản Chi</span>`;
+
+                const amountClass = isIncome ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold';
+                const prefix = isIncome ? '+' : '-';
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition-all";
+                tr.innerHTML = `
+                    <td class="py-3.5 px-6 font-semibold text-slate-700">${tx.title}</td>
+                    <td class="py-3.5 px-6">${typeBadge}</td>
+                    <td class="py-3.5 px-4 text-right ${amountClass}">${prefix} ${amountNum.toLocaleString('vi-VN')} đ</td>
+                    <td class="py-3.5 px-6 text-center space-x-2">
+                        <button onclick="editTransaction(${tx.id})" class="text-xs font-bold text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-all cursor-pointer"><i class="fa-solid fa-pen"></i> Sửa</button>
+                        <button onclick="deleteTransaction(${tx.id})" class="text-xs font-bold text-rose-600 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg transition-all cursor-pointer"><i class="fa-solid fa-trash"></i> Xóa</button>
+                    </td>
+                `;
+                listContainer.appendChild(tr);
+            });
+
+            // Hiển thị số dư được định dạng VNĐ đẹp mắt
+            document.getElementById('balanceDisplay').innerText = totalBalance.toLocaleString('vi-VN') + " đ";
+            document.getElementById('txCount').innerText = transactions.length;
+        }
+
+        // 6. CHỨC NĂNG THÊM HOẶC CẬP NHẬT GIAO DỊCH (C.U.D)
+        async function saveTransaction() {
+            const id = document.getElementById('txId').value;
+            const title = document.getElementById('txTitle').value.trim();
+            const amount = document.getElementById('txAmount').value.trim();
+            const type = document.getElementById('txType').value;
+
+            if (!title || !amount) {
+                alert("⚠️ Vui lòng nhập đầy đủ tên mục và số tiền!");
+                return;
+            }
+
+            const url = id ? `${API_URL}/transactions/${id}` : `${API_URL}/transactions`;
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        title,
+                        amount: parseFloat(amount),
+                        type
+                    })
+                });
+
+                if (response.ok) {
+                    alert(id ? "✅ Cập nhật giao dịch thành công!" : "🎉 Thêm giao dịch mới thành công!");
+                    resetForm();
+                    fetchTransactions();
+                } else {
+                    alert("❌ Lưu giao dịch thất bại!");
+                }
+            } catch (error) {
+                alert("❌ Lỗi kết nối máy chủ khi lưu giao dịch: " + error.message);
+            }
+        }
+
+        // 7. CHỨC NĂNG XÓA GIAO DỊCH
+        async function deleteTransaction(id) {
+            if (!confirm("❓ Bạn có chắc chắn muốn xóa mục thu chi này không?")) return;
+
+            try {
+                const response = await fetch(`${API_URL}/transactions/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert("🗑️ Đã xóa giao dịch thành công khỏi Neon SQL!");
+                    fetchTransactions();
+                } else {
+                    alert("❌ Xóa giao dịch thất bại!");
+                }
+            } catch (error) {
+                alert("❌ Lỗi kết nối máy chủ khi xóa: " + error.message);
+            }
+        }
+
+        // 8. ĐƯA GIAO DỊCH LÊN FORM ĐỂ CHỈNH SỬA
+        function editTransaction(id) {
+            const tx = transactions.find(t => t.id === id);
+            if (!tx) return;
+
+            document.getElementById('txId').value = tx.id;
+            document.getElementById('txTitle').value = tx.title;
+            document.getElementById('txAmount').value = tx.amount;
+            document.getElementById('txType').value = tx.type;
+
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-500"></i> Chỉnh Sửa Giao Dịch #${tx.id}`;
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+        }
+
+        // 9. RESET FORM VỀ TRẠNG THÁI BAN ĐẦU
+        function resetForm() {
+            document.getElementById('txId').value = '';
+            document.getElementById('txTitle').value = '';
+            document.getElementById('txAmount').value = '';
+            document.getElementById('txType').value = 'income';
+
+            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-square-plus text-blue-500"></i> Ghi Chép Thu Chi Mới`;
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
