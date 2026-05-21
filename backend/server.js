@@ -48,19 +48,30 @@ if (result.rows.length > 0) {
 }
 
 
-// 3. API LẤY DANH SÁCH GIAO DỊCH (ĐÃ THÊM CỘT TYPE VÀO SELECT)
-// Ví dụ cấu trúc đúng
+// 3. API LẤY DANH SÁCH GIAO DỊCH (SỬA LẠI)
 app.get('/api/transactions', async (req, res) => {
-    const { userId } = req.query; // hoặc lấy từ session/token
+    const { userId } = req.query;
+    
+    if (!userId) {
+        return res.status(400).json({ success: false, message: "Thiếu userId" });
+    }
+
     try {
         const result = await pool.query(
-            'SELECT id, title, amount, type, createdat FROM transactions WHERE userid = $1 ORDER BY createdat DESC', 
+            `SELECT id, title, amount, type, createdat 
+             FROM transactions 
+             WHERE userid = $1 
+             ORDER BY createdat DESC`,
             [userId]
         );
-        res.json(result.rows);
+
+        res.json({ 
+            success: true, 
+            transactions: result.rows 
+        });
     } catch (err) {
         console.error(err);
-        res.status(500).send("Lỗi server");
+        res.status(500).json({ success: false, message: "Lỗi server: " + err.message });
     }
 });
 
