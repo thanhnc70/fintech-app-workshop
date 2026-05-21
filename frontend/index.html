@@ -144,9 +144,8 @@
     <footer class="text-center py-4 text-xs text-slate-400 font-medium border-t border-slate-200 bg-white mt-8">
         &copy; 2026 Fintech Workshop Premium. Đồng bộ hóa dữ liệu thời gian thực.
     </footer>
-
-    <script>
-        const API_URL = 'https://fintech-backend-api-t83c.onrender.com/api';
+            <script>
+        const API_URL = 'https://onrender.com';
 
         // 1. KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP KHI TẢI TRANG
         document.addEventListener('DOMContentLoaded', () => {
@@ -154,24 +153,28 @@
         });
 
         function checkAuthStatus() {
-            // Đọc dữ liệu từ localStorage theo hướng dẫn Bước 2 mục 2 trong ảnh
-            const user = JSON.parse(localStorage.getItem('user'));
+            let user = JSON.parse(localStorage.getItem('user'));
             const authSection = document.getElementById('authSection');
             const dashboardSection = document.getElementById('dashboardSection');
 
+            // Xử lý phòng ngừa nếu Backend trả về dạng Mảng [ {} ] thay vì Đối tượng { }
+            if (Array.isArray(user) && user.length > 0) {
+                user = user[0];
+                localStorage.setItem('user', JSON.stringify(user)); // Đồng bộ lại cấu trúc chuẩn
+            }
+
             if (user && user.id) {
-                // Đăng nhập rồi: Hiện Dashboard, ẩn Form đăng nhập
+                // Đã đăng nhập: Hiện Dashboard, ẩn Form đăng nhập
                 authSection.classList.add('hidden');
                 dashboardSection.classList.remove('hidden');
                 
-                // Hiển thị thông tin lên màn hình không bị lỗi #undefined
                 document.getElementById('welcomeUser').innerText = `Xin chào, ${user.fullname || user.username}!`;
                 document.getElementById('user-id').innerText = `ID: ${user.id}`;
                 
-                // Lấy danh sách giao dịch từ server về hiển thị
+                // Lấy danh sách giao dịch
                 fetchTransactions(user.id);
             } else {
-                // Chưa đăng nhập: Hiện Form đăng nhập, ẩn Dashboard
+                // Chưa đăng nhập hoặc lỗi cấu trúc: Hiện Form đăng nhập
                 authSection.classList.remove('hidden');
                 dashboardSection.classList.add('hidden');
             }
@@ -207,49 +210,53 @@
             }
         }
 
-        // 3. CHỨC NĂNG ĐĂNG NHẬP (Đã bổ sung đầy đủ các dấu đóng hàm)
-async function handleLogin(event) {
-    if (event) event.preventDefault();
-    
-    const usernameInput = document.getElementById('loginUsername');
-    const passwordInput = document.getElementById('loginPassword');
-    
-    if (!usernameInput || !passwordInput) {
-        alert("❌ Lỗi hệ thống: Không tìm thấy các ô nhập liệu HTML!");
-        return;
-    }
+        // 3. CHỨC NĂNG ĐĂNG NHẬP (Bổ sung bóc tách mảng tự động)
+        async function handleLogin(event) {
+            if (event) event.preventDefault();
+            
+            const usernameInput = document.getElementById('loginUsername');
+            const passwordInput = document.getElementById('loginPassword');
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
 
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim();
+            if (!username || !password) {
+                alert("⚠️ Vui lòng nhập đầy đủ tài khoản & mật khẩu!");
+                return;
+            }
 
-    if (!username || !password) {
-        alert("⚠️ Vui lòng nhập đầy đủ tài khoản & mật khẩu!");
-        return;
-    }
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
 
-    try {
-        const response = await fetch(`${API_URL}/login`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        });
+                const data = await response.json();
 
-        const data = await response.json();
-
-        if (data.success) {
-            localStorage.setItem('user', JSON.stringify(data.user));
-            window.location.reload(); 
-        } else {
-            alert("❌ " + (data.message || "Sai tài khoản hoặc mật khẩu!"));
+                if (data.success) {
+                    let userData = data.user;
+                    // Nếu Backend trả về mảng, lấy phần tử đầu tiên
+                    if (Array.isArray(userData)) {
+                        userData = userData[0];
+                    }
+                    
+                    if (userData && userData.id) {
+                        localStorage.setItem('user', JSON.stringify(userData));
+                        window.location.reload(); 
+                    } else {
+                        alert("❌ Dữ liệu người dùng trả về từ Server không hợp lệ!");
+                    }
+                } else {
+                    alert("❌ " + (data.message || "Sai tài khoản hoặc mật khẩu!"));
+                }
+            } catch (error) {
+                alert("❌ Lỗi kết nối máy chủ: " + error.message);
+            }
         }
-    } catch (error) {
-        alert("❌ Lỗi kết nối máy chủ: " + error.message);
-    }
-}
-
 
         // 4. ĐĂNG XUẤT TÀI KHOẢN
         function handleLogout() {
@@ -275,7 +282,7 @@ async function handleLogin(event) {
             const container = document.getElementById('transactionList');
             const totalBalanceEl = document.getElementById('totalBalance');
             
-            if (!list || list.length === 0) {
+            if (!list || !Array.isArray(list) || list.length === 0) {
                 container.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">Chưa có dữ liệu giao dịch nào.</p>`;
                 totalBalanceEl.innerText = "0 đ";
                 return;
@@ -285,10 +292,9 @@ async function handleLogin(event) {
             let total = 0;
 
             list.forEach(item => {
-                const amount = parseFloat(item.amount);
+                const amount = parseFloat(item.amount || 0);
                 const isIncome = item.type === 'income' || amount >= 0;
                 
-                // Cộng/trừ số dư tổng hợp dựa vào trường type
                 if (isIncome) {
                     total += Math.abs(amount);
                 } else {
@@ -306,8 +312,8 @@ async function handleLogin(event) {
                                 <i class="fa-solid ${icon}"></i>
                             </div>
                             <div>
-                                <p class="font-bold text-slate-700">${item.title}</p>
-                                <p class="text-[10px] text-slate-400 font-medium">${new Date(item.createdat || item.createdAt).toLocaleString('vi-VN')}</p>
+                                <p class="font-bold text-slate-700">${item.title || 'Không có tiêu đề'}</p>
+                                <p class="text-[10px] text-slate-400 font-medium">${item.createdat ? new Date(item.createdat).toLocaleString('vi-VN') : 'Vừa xong'}</p>
                             </div>
                         </div>
                         <span class="font-black ${isIncome ? 'text-emerald-600' : 'text-rose-600'}">
@@ -327,9 +333,11 @@ async function handleLogin(event) {
             }
         }
 
-        // 7. LƯU GIAO DỊCH MỚI (Đã đồng bộ trường type và userId theo Bước 2 mục 3)
+        // 7. LƯU GIAO DỊCH MỚI
         async function saveTransaction() {
-            const user = JSON.parse(localStorage.getItem('user'));
+            let user = JSON.parse(localStorage.getItem('user'));
+            if (Array.isArray(user)) user = user[0];
+
             if (!user || !user.id) {
                 alert("⚠️ Vui lòng đăng nhập trước khi thực hiện giao dịch!");
                 return;
@@ -348,7 +356,6 @@ async function handleLogin(event) {
                 return;
             }
 
-            // Đóng gói dữ liệu đồng bộ cấu trúc chuẩn hóa gửi sang Backend
             const transactionData = {
                 userId: user.id, 
                 title: title,
@@ -365,16 +372,14 @@ async function handleLogin(event) {
                 
                 const data = await response.json();
                 if (data.success) {
-                    // Reset form nhập liệu
                     titleInput.value = '';
                     amountInput.value = '';
-                    // Tải lại danh sách cập nhật mới số dư tức thì
                     fetchTransactions(user.id);
                 } else {
                     alert("❌ Lỗi: " + data.message);
                 }
             } catch (error) {
-                alert("❌ Lỗi kết nối đám mây khi lưu giao dịch: " + error.message);
+                alert("❌ Lỗi kết nối đám mây: " + error.message);
             }
         }
     </script>
