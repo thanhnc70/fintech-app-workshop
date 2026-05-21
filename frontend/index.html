@@ -80,7 +80,6 @@
     <script>
         const API_URL = 'https://fintech-backend-api-t83c.onrender.com/api';
         let transactions = [];
-        let currentBalance = 0;
         let currentUserId = null;
 
         // 1. CHỨC NĂNG ĐĂNG KÝ
@@ -137,7 +136,7 @@
                     const container = document.getElementById('mainContainer');
                     container.className = "w-full mx-auto px-4 py-6 flex-grow max-w-6xl";
                     
-                    // Gọi hàm sinh giao diện Dashboard (Đã bổ sung bên dưới)
+                    // Gọi hàm sinh giao diện Dashboard
                     renderDashboard(displayUser);
                     
                     // Đồng bộ dữ liệu thực tế từ Neon SQL về bảng
@@ -150,7 +149,7 @@
             }
         }
 
-        // 3. HÀM SINH CẤU TRÚC GIAO DIỆN DASHBOARD (ĐÃ BỔ SUNG ĐỦ)
+        // 3. HÀM SINH CẤU TRÚC GIAO DIỆN DASHBOARD
         function renderDashboard(user) {
             document.getElementById('mainContainer').innerHTML = `
                 <div class="grid lg:grid-cols-3 gap-6 items-start w-full">
@@ -198,7 +197,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <button type="button" onclick="saveTransaction()" class="w-full mt-2 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 shadow-md shadow-slate-800/10 cursor-pointer">
+                                <button type="button" onclick="saveTransaction()" class="w-full mt-2 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-4 rounded-xl shadow-md shadow-slate-800/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs">
                                     <i class="fa-solid fa-floppy-disk"></i> Lưu Giao Dịch
                                 </button>
                                 <button id="cancelEditBtn" type="button" onclick="resetForm()" class="w-full text-center text-[11px] text-slate-400 font-bold hover:text-slate-600 hidden mt-2">
@@ -232,8 +231,7 @@
                                             <th class="py-3 px-6 text-center">Hành động chỉnh sửa</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="transactionList" class="divide-y divide-slate-100 text-sm">
-                                        </tbody>
+                                    <tbody id="transactionList" class="divide-y divide-slate-100 text-sm"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -243,7 +241,7 @@
             `;
         }
 
-        // 4. HÀM READ - LẤY DỮ LIỆU TỪ NEON DATABASE
+        // 4. HÀM READ - LẤY DỮ LIỆU TỪ NEON DATABASE (Đã đồng bộ query params với backend mới)
         async function fetchTransactions() {
             try {
                 const response = await fetch(`${API_URL}/transactions?userId=${currentUserId}`);
@@ -255,7 +253,7 @@
             }
         }
 
-        // 5. RENDER BẢNG VÀ TÍNH SỐ DƯ THỰC TẾ
+        // 5. RENDER BẢNG VÀ TÍNH SỐ DƯ THỰC TẾ (Sử dụng chuẩn thuộc tính chữ thường)
         function renderTransactionTable() {
             const listContainer = document.getElementById('transactionList');
             if (!listContainer) return;
@@ -272,131 +270,4 @@
 
             transactions.forEach(tx => {
                 const amountNum = parseFloat(tx.amount);
-                const isIncome = amountNum > 0;
-                totalBalance += amountNum;
-
-                const badge = isIncome 
-                    ? '<span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">Khoản Thu In</span>'
-                    : '<span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-50 text-rose-600 border border-rose-200">Khoản Chi Out</span>';
-
-                const amountColor = isIncome ? 'text-emerald-600 font-bold' : 'text-slate-700 font-medium';
-                const sign = isIncome ? '+' : '';
-                const displayDate = tx.createdat ? new Date(tx.createdat).toLocaleDateString('vi-VN') : 'Mới';
-
-                listContainer.innerHTML += `
-                    <tr class="hover:bg-slate-50/80 transition-all">
-                        <td class="py-3.5 px-6 font-semibold text-slate-800">
-                            ${tx.title}
-                            <div class="text-[10px] text-slate-400 font-normal mt-0.5">${displayDate}</div>
-                        </td>
-                        <td class="py-3.5 px-6">${badge}</td>
-                        <td class="py-3.5 px-4 text-right ${amountColor} font-mono">${sign}${amountNum.toLocaleString('vi-VN')} đ</td>
-                        <td class="py-3.5 px-6 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <button onclick="editTransaction(${tx.id})" class="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all cursor-pointer text-xs">
-                                    <i class="fa-solid fa-pen-to-square"></i> Sửa
-                                </button>
-                                <button onclick="deleteTransaction(${tx.id})" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer text-xs">
-                                    <i class="fa-solid fa-trash-can"></i> Xóa
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            document.getElementById('balanceDisplay').innerText = `${totalBalance.toLocaleString('vi-VN')} đ`;
-            document.getElementById('txCount').innerText = transactions.length;
-        }
-
-        // 6. HÀM CREATE & UPDATE - ĐẨY LÊN NEON CLOUD
-        async function saveTransaction() {
-            const idInput = document.getElementById('txId').value;
-            const title = document.getElementById('txTitle').value.trim();
-            let amount = parseFloat(document.getElementById('txAmount').value);
-            const type = document.getElementById('txType').value;
-
-            if (!title || isNaN(amount) || amount <= 0) {
-                alert("⚠️ Vui lòng nhập đầy đủ tên mục và số tiền hợp lệ lớn hơn 0!");
-                return;
-            }
-
-            if (type === 'expense') {
-                amount = -amount;
-            }
-
-            try {
-                let response;
-                if (idInput === "") {
-                    response = await fetch(`${API_URL}/transactions`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId: currentUserId, title, amount })
-                    });
-                } else {
-                    response = await fetch(`${API_URL}/transactions/${idInput}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, amount })
-                    });
-                }
-
-                const data = await response.json();
-                if (data.success) {
-                    fetchTransactions();
-                    resetForm();
-                } else {
-                    alert("❌ Không thể xử lý: " + data.message);
-                }
-            } catch (error) {
-                alert("❌ Lỗi kết nối đám mây: " + error.message);
-            }
-        }
-
-        // 7. CHUYỂN FORM SANG CHẾ ĐỘ UPDATE
-        function editTransaction(id) {
-            const tx = transactions.find(t => t.id === id);
-            if (!tx) return;
-
-            const rawAmount = parseFloat(tx.amount);
-
-            document.getElementById('txId').value = tx.id;
-            document.getElementById('txTitle').value = tx.title;
-            document.getElementById('txAmount').value = Math.abs(rawAmount); 
-            document.getElementById('txType').value = rawAmount > 0 ? 'income' : 'expense';
-
-            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-500"></i> Đang Hiệu Chỉnh Mục Dữ Liệu`;
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-        }
-
-        // 8. HÀM DELETE GIAO DỊCH KHỎI NEON DATABASE
-        async function deleteTransaction(id) {
-            if (!confirm("🗑️ Bạn có chắc chắn muốn xóa mục lịch sử ghi chép này không?")) return;
-
-            try {
-                const response = await fetch(`${API_URL}/transactions/${id}`, { method: 'DELETE' });
-                const data = await response.json();
-                
-                if (data.success) {
-                    fetchTransactions();
-                    resetForm();
-                } else {
-                    alert("❌ Lỗi: " + data.message);
-                }
-            } catch (error) {
-                alert("❌ Lỗi kết nối máy chủ: " + error.message);
-            }
-        }
-
-        // HÀM RESET FORM MẶC ĐỊNH
-        function resetForm() {
-            document.getElementById('txId').value = '';
-            document.getElementById('txTitle').value = '';
-            document.getElementById('txAmount').value = '';
-            document.getElementById('txType').value = 'expense';
-            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-square-plus text-blue-500"></i> Ghi Chép Thu Chi Mới`;
-            document.getElementById('cancelEditBtn').classList.add('hidden');
-        }
-    </script>
-</body>
-</html>
+                const is
