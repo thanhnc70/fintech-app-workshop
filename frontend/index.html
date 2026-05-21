@@ -3,142 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ví Điện Tử Thông Minh</title>
+    <title>Ví Thông Minh</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body class="bg-gradient-to-br from-slate-950 to-zinc-900 text-white min-h-screen">
+<body class="bg-zinc-950 text-white min-h-screen">
     <div class="max-w-7xl mx-auto p-6">
-        <!-- Header -->
         <header class="flex justify-between items-center mb-8">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl">
-                    💰
-                </div>
+                <div class="w-11 h-11 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-2xl flex items-center justify-center text-2xl">💰</div>
                 <div>
-                    <h1 class="text-3xl font-bold tracking-tight">Ví Thông Minh</h1>
-                    <p class="text-slate-400 text-sm">Quản lý tài chính • Neon Cloud</p>
+                    <h1 class="text-3xl font-bold">Ví Thông Minh</h1>
+                    <p class="text-zinc-400 text-sm">Quản lý tài chính • Neon Cloud</p>
                 </div>
             </div>
-            <div class="flex items-center gap-4">
-                <div id="userInfo" class="text-right">
-                    <div class="font-semibold" id="usernameDisplay"></div>
-                    <div class="text-xs text-emerald-400">ID: #<span id="userIdDisplay"></span></div>
-                </div>
-                <button onclick="logout()" class="px-5 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-2xl text-sm font-medium transition">
-                    Đăng xuất
-                </button>
-            </div>
+            <button onclick="logout()" class="px-6 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-2xl text-sm font-medium">Đăng xuất</button>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Sidebar -->
+            <!-- Balance -->
             <div class="lg:col-span-4 space-y-6">
-                <!-- Balance Card -->
-                <div class="bg-gradient-to-br from-zinc-800 to-slate-900 rounded-3xl p-8 border border-white/10">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-slate-400 text-sm">Số dư khả dụng</p>
-                            <h2 id="balanceDisplay" class="text-5xl font-bold mt-2 text-white">0 đ</h2>
+                <div class="bg-zinc-900 rounded-3xl p-8">
+                    <p class="text-zinc-400">Số dư khả dụng</p>
+                    <h2 id="balanceDisplay" class="text-6xl font-bold mt-3">0 đ</h2>
+                    <div class="grid grid-cols-2 gap-4 mt-8">
+                        <div class="bg-emerald-500/10 rounded-2xl p-4">
+                            <p class="text-emerald-400 text-sm">TỔNG THU</p>
+                            <p id="totalIncome" class="text-2xl font-semibold text-emerald-400 mt-1">0 đ</p>
                         </div>
-                        <div class="text-emerald-400 text-4xl">💎</div>
-                    </div>
-                    <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
-                        <div class="bg-white/5 rounded-2xl p-4">
-                            <p class="text-emerald-400 text-xs">TỔNG THU</p>
-                            <p id="totalIncome" class="text-2xl font-semibold text-emerald-400">0 đ</p>
-                        </div>
-                        <div class="bg-white/5 rounded-2xl p-4">
-                            <p class="text-rose-400 text-xs">TỔNG CHI</p>
-                            <p id="totalExpense" class="text-2xl font-semibold text-rose-400">0 đ</p>
+                        <div class="bg-rose-500/10 rounded-2xl p-4">
+                            <p class="text-rose-400 text-sm">TỔNG CHI</p>
+                            <p id="totalExpense" class="text-2xl font-semibold text-rose-400 mt-1">0 đ</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Add Transaction -->
-                <div class="bg-zinc-900 rounded-3xl p-6 border border-white/10">
-                    <h3 class="font-semibold mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Ghi chép mới
-                    </h3>
+                <!-- Add Form -->
+                <div class="bg-zinc-900 rounded-3xl p-6">
+                    <h3 class="font-semibold mb-4">+ Ghi chép mới</h3>
                     <div class="space-y-4">
-                        <input id="txTitle" type="text" placeholder="Nội dung giao dịch" 
-                               class="w-full bg-zinc-800 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500">
-                        
+                        <input id="txTitle" type="text" placeholder="Nội dung giao dịch" class="w-full bg-zinc-800 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-violet-500">
                         <div class="grid grid-cols-2 gap-4">
-                            <input id="txAmount" type="number" placeholder="Số tiền" 
-                                   class="w-full bg-zinc-800 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500">
-                            <select id="txType" class="w-full bg-zinc-800 border border-white/10 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500">
+                            <input id="txAmount" type="number" placeholder="Số tiền" class="w-full bg-zinc-800 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-violet-500">
+                            <select id="txType" class="w-full bg-zinc-800 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-violet-500">
                                 <option value="income">📈 Khoản Thu</option>
                                 <option value="expense">📉 Khoản Chi</option>
                             </select>
                         </div>
-
-                        <button onclick="saveTransaction()" 
-                                class="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-emerald-400 transition-all">
-                            💾 LƯU GIAO DỊCH
-                        </button>
+                        <button onclick="saveTransaction()" class="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-emerald-400 transition">💾 LƯU GIAO DỊCH</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Main Content -->
+            <!-- Transactions -->
             <div class="lg:col-span-8">
-                <div class="bg-zinc-900 rounded-3xl p-6 border border-white/10">
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                        <h2 class="text-xl font-bold">Sổ nhật ký thu chi</h2>
-                        
-                        <div class="flex gap-3">
-                            <input id="searchInput" type="text" placeholder="Tìm kiếm..." 
-                                   onkeyup="filterTransactions()"
-                                   class="bg-zinc-800 border border-white/10 rounded-2xl px-4 py-3 focus:outline-none w-64">
-                            
-                            <select id="filterType" onchange="filterTransactions()" 
-                                    class="bg-zinc-800 border border-white/10 rounded-2xl px-4 py-3 focus:outline-none">
-                                <option value="">Tất cả</option>
-                                <option value="income">Chỉ Thu</option>
-                                <option value="expense">Chỉ Chi</option>
-                            </select>
-                        </div>
+                <div class="bg-zinc-900 rounded-3xl p-6">
+                    <div class="flex justify-between mb-6">
+                        <h2 class="text-xl font-semibold">Sổ nhật ký thu chi</h2>
+                        <input id="searchInput" type="text" placeholder="Tìm kiếm..." onkeyup="filterTransactions()" 
+                               class="bg-zinc-800 rounded-2xl px-4 py-2 w-80 outline-none">
                     </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-white/10 text-slate-400 text-sm">
-                                    <th class="py-4 text-left">Nội dung</th>
-                                    <th class="py-4">Loại</th>
-                                    <th class="py-4 text-right">Số tiền</th>
-                                    <th class="py-4 text-center">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="transactionList" class="divide-y divide-white/10"></tbody>
-                        </table>
-                    </div>
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-zinc-400 border-b border-zinc-700">
+                                <th class="py-4 text-left">Nội dung</th>
+                                <th class="py-4">Loại</th>
+                                <th class="py-4 text-right">Số tiền</th>
+                                <th class="py-4 text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionList" class="divide-y divide-zinc-800"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const API_URL = 'https://fintech-backend-api-t83c.onrender.com/api';
+        const API_URL = "https://fintech-backend-api-t83c.onrender.com/api";
         let transactions = [];
-        let currentUserId = null;
-        let currentUserName = '';
-
-        // Load user from localStorage or session
-        function initUser() {
-            currentUserId = localStorage.getItem('userId');
-            currentUserName = localStorage.getItem('fullname') || 'Người dùng';
-            
-            if (!currentUserId) {
-                window.location.reload(); // redirect to login if no user
-                return;
-            }
-            
-            document.getElementById('usernameDisplay').textContent = currentUserName;
-            document.getElementById('userIdDisplay').textContent = currentUserId;
-            fetchTransactions();
-        }
+        let currentUserId = 1; // tạm thời hardcode, sau sẽ lấy từ login
 
         async function fetchTransactions() {
             try {
@@ -146,113 +90,78 @@
                 const data = await res.json();
                 transactions = data.transactions || [];
                 renderTransactions();
-            } catch (e) {
-                console.error(e);
-            }
+            } catch(e) { console.error(e); }
         }
 
-        function renderTransactions(filtered = null) {
-            const list = document.getElementById('transactionList');
-            list.innerHTML = '';
-            
-            const data = filtered || transactions;
+        function renderTransactions() {
+            const tbody = document.getElementById('transactionList');
+            tbody.innerHTML = '';
             let balance = 0, income = 0, expense = 0;
 
-            data.forEach(tx => {
-                const amount = parseFloat(tx.amount);
+            transactions.forEach(tx => {
+                const amt = parseFloat(tx.amount);
                 const isIncome = tx.type === 'income';
-                
-                if (isIncome) {
-                    income += amount;
-                    balance += amount;
-                } else {
-                    expense += amount;
-                    balance -= amount;
-                }
+                if (isIncome) { income += amt; balance += amt; }
+                else { expense += amt; balance -= amt; }
 
-                const row = document.createElement('tr');
-                row.className = "hover:bg-white/5 transition";
-                row.innerHTML = `
-                    <td class="py-4 px-4 font-medium">${tx.title}</td>
-                    <td class="py-4">
-                        <span class="px-4 py-1 rounded-full text-xs font-medium ${isIncome ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">
-                            ${isIncome ? 'Thu' : 'Chi'}
-                        </span>
-                    </td>
-                    <td class="py-4 text-right font-semibold ${isIncome ? 'text-emerald-400' : 'text-rose-400'}">
-                        ${isIncome ? '+' : '-'}${amount.toLocaleString('vi-VN')} đ
-                    </td>
-                    <td class="py-4 text-center">
-                        <button onclick="editTransaction(${tx.id})" class="text-blue-400 hover:text-blue-300 mr-4">Sửa</button>
-                        <button onclick="deleteTransaction(${tx.id})" class="text-rose-400 hover:text-rose-300">Xóa</button>
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-4">${tx.title}</td>
+                    <td><span class="px-3 py-1 rounded-full text-xs ${isIncome ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">${isIncome ? 'Thu' : 'Chi'}</span></td>
+                    <td class="text-right font-medium ${isIncome ? 'text-emerald-400' : 'text-rose-400'}">${isIncome ? '+' : '-'}${amt.toLocaleString()} đ</td>
+                    <td class="text-center">
+                        <button onclick="deleteTransaction(${tx.id})" class="text-rose-400 hover:text-rose-500">Xóa</button>
                     </td>
                 `;
-                list.appendChild(row);
+                tbody.appendChild(tr);
             });
 
-            document.getElementById('balanceDisplay').textContent = balance.toLocaleString('vi-VN') + " đ";
-            document.getElementById('totalIncome').textContent = income.toLocaleString('vi-VN') + " đ";
-            document.getElementById('totalExpense').textContent = expense.toLocaleString('vi-VN') + " đ";
-        }
-
-        function filterTransactions() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const typeFilter = document.getElementById('filterType').value;
-            
-            const filtered = transactions.filter(tx => {
-                const matchSearch = tx.title.toLowerCase().includes(search);
-                const matchType = !typeFilter || tx.type === typeFilter;
-                return matchSearch && matchType;
-            });
-            
-            renderTransactions(filtered);
+            document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + " đ";
+            document.getElementById('totalIncome').textContent = income.toLocaleString() + " đ";
+            document.getElementById('totalExpense').textContent = expense.toLocaleString() + " đ";
         }
 
         async function saveTransaction() {
             const title = document.getElementById('txTitle').value.trim();
-            const amount = parseFloat(document.getElementById('txAmount').value);
+            const amount = document.getElementById('txAmount').value;
             const type = document.getElementById('txType').value;
 
-            if (!title || !amount) return alert("Vui lòng nhập đầy đủ thông tin!");
+            if (!title || !amount) return alert("Vui lòng nhập đầy đủ!");
 
             try {
                 await fetch(`${API_URL}/transactions`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: currentUserId, title, amount, type })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ userId: currentUserId, title, amount: parseFloat(amount), type })
                 });
-                
-                alert("✅ Lưu giao dịch thành công!");
+                alert("✅ Lưu thành công!");
                 document.getElementById('txTitle').value = '';
                 document.getElementById('txAmount').value = '';
                 fetchTransactions();
-            } catch (e) {
-                alert("Lỗi khi lưu!");
+            } catch(e) {
+                alert("❌ Lỗi kết nối server");
             }
         }
 
         async function deleteTransaction(id) {
-            if (!confirm("Xóa giao dịch này?")) return;
-            await fetch(`${API_URL}/transactions/${id}`, { method: 'DELETE' });
-            fetchTransactions();
+            if(confirm("Xóa giao dịch này?")) {
+                await fetch(`${API_URL}/transactions/${id}`, { method: 'DELETE' });
+                fetchTransactions();
+            }
         }
 
-        function editTransaction(id) {
-            const tx = transactions.find(t => t.id === id);
-            if (!tx) return;
-            document.getElementById('txTitle').value = tx.title;
-            document.getElementById('txAmount').value = tx.amount;
-            document.getElementById('txType').value = tx.type;
-            alert("Chức năng chỉnh sửa sẽ được cập nhật ở phiên bản sau!");
+        function filterTransactions() {
+            // Có thể mở rộng sau
+            renderTransactions();
         }
 
         function logout() {
-            localStorage.clear();
+            alert("Đã đăng xuất!");
             window.location.reload();
         }
 
-        // Khởi chạy
-        window.onload = initUser;
+        // Khởi động
+        window.onload = fetchTransactions;
     </script>
 </body>
 </html>
