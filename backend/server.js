@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 app.use(express.json());
 
-// Cấu hình CORS mở hoàn toàn để tiếp nhận các yêu cầu từ tên miền Frontend trên Vercel
+// Cấu hình CORS mở hoàn toàn tiếp nhận các yêu cầu từ tên miền Frontend
 app.use(cors({
     origin: '*', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -17,7 +17,7 @@ const connectionString = "postgresql://neondb_owner:npg_YTFb4NMX6jyK@ep-falling-
 
 const pool = new Pool({
     connectionString: connectionString,
-    ssl: { rejectUnauthorized: false } // Bắt buộc đảm bảo kết nối bảo mật đám mây
+    ssl: { rejectUnauthorized: false }
 });
 
 // 1. API ĐĂNG KÝ
@@ -49,7 +49,6 @@ app.post('/api/login', async (req, res) => {
         );
         
         if (result.rows.length > 0) {
-            // Trả về cả 'id' lẫn 'userId' đảm bảo Frontend đọc kiểu gì cũng trúng đích
             res.json({ 
                 success: true, 
                 id: result.rows[0].id,
@@ -65,18 +64,18 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// 3. API LẤY DANH SÁCH GIAO DỊCH
+// 3. API LẤY DANH SÁCH GIAO DỊCH (ĐÃ THÊM CỘT TYPE VÀO SELECT)
 app.get('/api/transactions', async (req, res) => {
     try {
-        // Bẫy lỗi: Nhận cả trường hợp Frontend gửi lên viết hoa hoặc viết thường (?userId=... hoặc ?userid=...)
         const userId = req.query.userId || req.query.userid; 
         
         if (!userId) {
             return res.status(400).json({ success: false, message: "Thiếu thông tin ID người dùng!" });
         }
 
+        // QUAN TRỌNG: Đã bổ sung lấy cột 'type' từ bảng transactions về cho Frontend xử lý
         const result = await pool.query(
-            'SELECT id, title, amount, createdat FROM transactions WHERE userid = $1 ORDER BY createdat DESC', 
+            'SELECT id, title, amount, type, createdat FROM transactions WHERE userid = $1 ORDER BY createdat DESC', 
             [userId]
         );
         
@@ -86,29 +85,28 @@ app.get('/api/transactions', async (req, res) => {
     }
 });
 
-// 4. API THÊM MỚI GIAO DỊCH (SỬA ĐỔI CHÍNH TẠI ĐÂY)
+// 4. API THÊM MỚI GIAO DỊCH (ĐÃ CẬP NHẬT TRƯỜNG TYPE)
 app.post('/api/transactions', async (req, res) => {
     try {
-        // Bẫy lỗi: Chấp nhận cả userId (CamelCase) hoặc userid (viết thường) từ Frontend đẩy lên
         const userId = req.body.userId || req.body.userid;
-        const { title, amount } = req.body;
+        const { title, amount, type } = req.body;
         
         if (!userId || !title || amount === undefined) {
             return res.status(400).json({ success: false, message: "Thiếu dữ liệu đầu vào (userId, title hoặc amount)!" });
         }
 
-        // Ép kiểu dữ liệu phòng hờ trường hợp Frontend gửi chuỗi văn bản sai định dạng số
         const parsedUserId = parseInt(userId, 10);
         const parsedAmount = parseFloat(amount);
+        const transactionType = type || (parsedAmount >= 0 ? 'income' : 'expense');
 
         if (isNaN(parsedUserId)) {
             return res.status(400).json({ success: false, message: "ID người dùng không hợp lệ (Phải là số)!" });
         }
 
-        // Thực hiện ghi vào database
+        // Thực hiện ghi vào database bao gồm cả giá trị cột type để không bị null
         await pool.query(
-            'INSERT INTO transactions (userid, title, amount, createdat) VALUES ($1, $2, $3, NOW())', 
-            [parsedUserId, title, parsedAmount]
+            'INSERT INTO transactions (userid, title, amount, type, createdat) VALUES ($1, $2, $3, $4, NOW())', 
+            [parsedUserId, title, parsedAmount, transactionType]
         );
         
         res.json({ success: true, message: "Lưu giao dịch thành công!" });
@@ -117,13 +115,16 @@ app.post('/api/transactions', async (req, res) => {
     }
 });
 
-// 5. API CẬP NHẬT / SỬA 
+// 5. API CẬP NHẬT / SỬA GIAO DỊCH (ĐÃ ĐỒNG BỘ THÊM CỘT TYPE)
 app.put('/api/transactions/:id', async (req, res) => {
     try {
-        const { title, amount } = req.body;
+        const { title, amount, type } = req.body;
+        const parsedAmount = parseFloat(amount);
+        const transactionType = type || (parsedAmount >= 0 ? 'income' : 'expense');
+
         await pool.query(
-            'UPDATE transactions SET title = $1, amount = $2 WHERE id = $3', 
-            [title, amount, req.params.id]
+            'UPDATE transactions SET title = $1, amount = $2, type = $3 WHERE id = $4', 
+            [title, parsedAmount, transactionType, req.params.id]
         );
         res.json({ success: true, message: "Cập nhật giao dịch thành công!" });
     } catch (err) {
@@ -131,7 +132,7 @@ app.put('/api/transactions/:id', async (req, res) => {
     }
 });
 
-// 6. API XÓA 
+// 6. API XÓA GIAO DỊCH
 app.delete('/api/transactions/:id', async (req, res) => {
     try {
         await pool.query('DELETE FROM transactions WHERE id = $1', [req.params.id]);
@@ -141,11 +142,9 @@ app.delete('/api/transactions/:id', async (req, res) => {
     }
 });
 
-// Trang kiểm tra trạng thái hoạt động mặc định tại gốc hệ thống
 app.get('/', (req, res) => {
     res.json({ message: "Backend Node.js kết nối Neon PostgreSQL đám mây đang chạy tốt!" });
 });
 
-// Khởi chạy hệ thống tích hợp cổng tự động từ máy chủ Render/Vercel
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Hệ thống Server hoạt động ổn định tại cổng ${PORT}`));
