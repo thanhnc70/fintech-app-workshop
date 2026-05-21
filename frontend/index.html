@@ -78,7 +78,6 @@
     </footer>
 
     <script>
-        // MẸO: Bạn có thể đổi sang 'http://localhost:5000/api' nếu đang test local máy mình nhé!
         const API_URL = 'https://fintech-backend-api-t83c.onrender.com/api';
         let transactions = [];
         let currentUserId = null;
@@ -290,10 +289,9 @@
             transactions.forEach(tx => {
                 const amountNum = parseFloat(tx.amount) || 0;
                 
-                // Phòng hờ nếu database chưa có trường type thì ta bẫy lỗi dựa theo số tiền âm/dương
-                // Nếu tx.type trống hoàn toàn thì số dương mặc định là income
-                const isIncome = tx.type ? (tx.type === 'income' || tx.type === 'IN') : (amountNum >= 0);
-                const standardAmount = Math.abs(amountNum); // Lấy trị tuyệt đối để hiển thị đẹp mắt
+                // Đọc chính xác thuộc tính type từ DB trả về để phân loại Thu/Chi
+                const isIncome = tx.type === 'income';
+                const standardAmount = Math.abs(amountNum); 
 
                 if (isIncome) {
                     totalBalance += standardAmount;
@@ -322,12 +320,11 @@
                 listContainer.appendChild(tr);
             });
 
-            // Hiển thị số dư được định dạng VNĐ
             document.getElementById('balanceDisplay').innerText = totalBalance.toLocaleString('vi-VN') + " đ";
             document.getElementById('txCount').innerText = transactions.length;
         }
 
-        // 6. CHỨC NĂNG THÊM HOẶC CẬP NHẬT GIAO DỊCH (C.U.D)
+        // 6. CHỨC NĂNG THÊM HOẶC CẬP NHẬT GIAO DỊCH
         async function saveTransaction() {
             const id = document.getElementById('txId').value;
             const title = document.getElementById('txTitle').value.trim();
@@ -337,6 +334,14 @@
             if (!title || !amount) {
                 alert("⚠️ Vui lòng nhập đầy đủ tên mục và số tiền!");
                 return;
+            }
+
+            // Đồng bộ số tiền lưu vào DB: Nếu là expense (khoản chi) thì tự đổi sang số âm
+            let parsedAmount = parseFloat(amount);
+            if (type === 'expense' && parsedAmount > 0) {
+                parsedAmount = -parsedAmount;
+            } else if (type === 'income' && parsedAmount < 0) {
+                parsedAmount = Math.abs(parsedAmount);
             }
 
             const url = id ? `${API_URL}/transactions/${id}` : `${API_URL}/transactions`;
@@ -349,8 +354,8 @@
                     body: JSON.stringify({
                         userId: currentUserId,
                         title,
-                        amount: parseFloat(amount),
-                        type: type // Truyền phân loại lên đầy đủ
+                        amount: parsedAmount,
+                        type: type 
                     })
                 });
 
@@ -393,8 +398,9 @@
 
             document.getElementById('txId').value = tx.id;
             document.getElementById('txTitle').value = tx.title;
-            document.getElementById('txAmount').value = tx.amount;
-            // Nếu database chưa có phân loại, tự nhận dạng dựa vào số tiền
+            
+            // Hiển thị số dương trên ô nhập tiền cho dễ nhìn
+            document.getElementById('txAmount').value = Math.abs(tx.amount);
             document.getElementById('txType').value = tx.type || (parseFloat(tx.amount) >= 0 ? 'income' : 'expense');
 
             document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-500"></i> Chỉnh Sửa Giao Dịch #${tx.id}`;
