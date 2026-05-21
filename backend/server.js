@@ -39,30 +39,14 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// 2. API ĐĂNG NHẬP (Đã sửa đổi cấu trúc phản hồi khớp với Frontend)
-app.post('/api/login', async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        
-        // Truy vấn lấy đủ các cột id, username, fullname
-        const result = await pool.query(
-            'SELECT id, username, fullname FROM users WHERE username = $1 AND password = $2', 
-            [username, password]
-        );
-        
-        if (result.rows.length > 0) {
-            // Trả về đúng cấu trúc { success: true, user: { id, username, fullname } } như ảnh mẫu
-            res.json({ 
-                success: true, 
-                user: result.rows[0] 
-            });
-        } else {
-            res.status(401).json({ success: false, message: "Sai tài khoản hoặc mật khẩu!" });
-        }
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
-});
+// 2. API ĐĂNG NHẬP (server.js) - Hãy sửa dòng này ở Backend của bạn
+if (result.rows.length > 0) {
+    res.json({ 
+        success: true, 
+        user: result.rows[0] // Sửa từ result.rows thành result.rows[0]
+    });
+}
+
 
 // 3. API LẤY DANH SÁCH GIAO DỊCH (ĐÃ THÊM CỘT TYPE VÀO SELECT)
 // Ví dụ cấu trúc đúng
