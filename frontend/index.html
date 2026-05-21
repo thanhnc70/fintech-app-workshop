@@ -24,17 +24,26 @@
                     <button onclick="showRegister()" class="py-3 font-medium rounded-2xl bg-zinc-800 hover:bg-zinc-700">Đăng Ký</button>
                 </div>
 
+                <!-- Login Form -->
                 <div id="loginForm">
-                    <input id="loginUsername" type="text" placeholder="Tên tài khoản" class="w-full mb-3 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4">
-                    <input id="loginPassword" type="password" placeholder="Mật khẩu" class="w-full mb-6 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4">
-                    <button onclick="handleLogin()" class="w-full bg-white text-black font-bold py-4 rounded-2xl">Đăng Nhập</button>
+                    <input id="loginUsername" type="text" placeholder="Tên tài khoản" 
+                           class="w-full mb-3 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-violet-500">
+                    <input id="loginPassword" type="password" placeholder="Mật khẩu" 
+                           class="w-full mb-6 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-violet-500">
+                    <button onclick="handleLogin()" 
+                            class="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-emerald-400 transition">Đăng Nhập</button>
                 </div>
 
+                <!-- Register Form -->
                 <div id="registerForm" class="hidden">
-                    <input id="regFullname" type="text" placeholder="Họ và tên" class="w-full mb-3 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4">
-                    <input id="regUsername" type="text" placeholder="Tên tài khoản" class="w-full mb-3 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4">
-                    <input id="regPassword" type="password" placeholder="Mật khẩu" class="w-full mb-6 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4">
-                    <button onclick="handleRegister()" class="w-full bg-white text-black font-bold py-4 rounded-2xl">Tạo Tài Khoản</button>
+                    <input id="regFullname" type="text" placeholder="Họ và tên" 
+                           class="w-full mb-3 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-violet-500">
+                    <input id="regUsername" type="text" placeholder="Tên tài khoản" 
+                           class="w-full mb-3 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-violet-500">
+                    <input id="regPassword" type="password" placeholder="Mật khẩu" 
+                           class="w-full mb-6 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-violet-500">
+                    <button onclick="handleRegister()" 
+                            class="w-full bg-white text-black font-bold py-4 rounded-2xl hover:bg-emerald-400 transition">Tạo Tài Khoản</button>
                 </div>
             </div>
         </div>
@@ -50,8 +59,9 @@
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Panel -->
                 <div class="lg:col-span-4 space-y-6">
-                    <!-- Balance Card -->
+                    <!-- Balance -->
                     <div class="bg-zinc-900 rounded-3xl p-8">
                         <p class="text-zinc-400">Số dư khả dụng</p>
                         <h2 id="balanceDisplay" class="text-5xl font-bold mt-2">0 đ</h2>
@@ -59,7 +69,7 @@
                         <!-- Cảnh báo số dư thấp -->
                         <div id="lowBalanceWarning" class="hidden mt-4 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-2xl text-sm flex items-center gap-2">
                             <i class="fa-solid fa-triangle-exclamation"></i>
-                            <span>Số dư của bạn đang rất thấp! Hãy kiểm tra chi tiêu.</span>
+                            <span>Số dư của bạn đang rất thấp (&lt; 10.000đ). Hãy kiểm tra chi tiêu!</span>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4 mt-8">
@@ -74,20 +84,26 @@
                         </div>
                     </div>
 
-                    <!-- Add Transaction -->
+                    <!-- Add / Edit Form -->
                     <div class="bg-zinc-900 rounded-3xl p-6">
                         <h3 id="formTitle" class="font-semibold mb-4">+ Ghi chép mới</h3>
                         <input type="hidden" id="editId">
-                        <input id="txTitle" placeholder="Nội dung giao dịch" class="w-full mb-3 bg-zinc-800 rounded-2xl px-5 py-4">
+                        <input id="txTitle" placeholder="Nội dung giao dịch" 
+                               class="w-full mb-3 bg-zinc-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-violet-500">
                         <div class="grid grid-cols-2 gap-3">
-                            <input id="txAmount" type="number" placeholder="Số tiền" class="bg-zinc-800 rounded-2xl px-5 py-4">
-                            <select id="txType" class="bg-zinc-800 rounded-2xl px-5 py-4">
+                            <input id="txAmount" type="number" placeholder="Số tiền" 
+                                   class="bg-zinc-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-violet-500">
+                            <select id="txType" class="bg-zinc-800 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-violet-500">
                                 <option value="income">📈 Khoản Thu</option>
                                 <option value="expense">📉 Khoản Chi</option>
                             </select>
                         </div>
-                        <button onclick="saveTransaction()" class="w-full mt-4 bg-white text-black font-bold py-4 rounded-2xl">💾 Lưu Giao Dịch</button>
-                        <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden w-full mt-3 text-zinc-400 hover:text-white text-sm">Hủy chỉnh sửa</button>
+                        <button onclick="saveTransaction()" 
+                                class="w-full mt-4 bg-white text-black font-bold py-4 rounded-2xl hover:bg-emerald-400 transition">
+                            💾 Lưu Giao Dịch
+                        </button>
+                        <button id="cancelEditBtn" onclick="cancelEdit()" 
+                                class="hidden w-full mt-3 text-zinc-400 hover:text-white text-sm">Hủy chỉnh sửa</button>
                     </div>
                 </div>
 
@@ -118,7 +134,63 @@
         let currentUserName = "";
         let transactions = [];
 
-        // ... (giữ nguyên các hàm showLogin, showRegister, handleRegister, handleLogin, logout)
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        async function handleRegister() {
+            const fullname = document.getElementById('regFullname').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+
+            if (!fullname || !username || !password) return alert("Vui lòng điền đầy đủ thông tin!");
+
+            try {
+                const res = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullname, username, password })
+                });
+                const data = await res.json();
+                alert(data.message || "Đăng ký thành công!");
+                showLogin();
+            } catch (e) { alert("Lỗi kết nối server"); }
+        }
+
+        async function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!username || !password) return alert("Vui lòng nhập tài khoản và mật khẩu!");
+
+            try {
+                const res = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    currentUserId = data.userId;
+                    currentUserName = data.fullname || username;
+
+                    document.getElementById('authScreen').classList.add('hidden');
+                    document.getElementById('dashboardScreen').classList.remove('hidden');
+                    document.getElementById('userNameHeader').textContent = currentUserName;
+
+                    fetchTransactions();
+                } else {
+                    alert(data.message || "Sai tài khoản hoặc mật khẩu!");
+                }
+            } catch (e) { alert("Không thể kết nối server"); }
+        }
 
         async function fetchTransactions() {
             try {
@@ -165,7 +237,7 @@
             document.getElementById('totalIncome').textContent = totalIncome.toLocaleString('vi-VN') + " đ";
             document.getElementById('totalExpense').textContent = totalExpense.toLocaleString('vi-VN') + " đ";
 
-            // Cảnh báo số dư thấp
+            // Cảnh báo số dư thấp (< 10.000đ)
             const warning = document.getElementById('lowBalanceWarning');
             if (balance < 10000) {
                 warning.classList.remove('hidden');
@@ -174,11 +246,57 @@
             }
         }
 
-        // Các hàm save, edit, delete, cancelEdit giữ nguyên như trước
-        async function saveTransaction() { /* ... */ }
-        function editTransaction(id) { /* ... */ }
-        function cancelEdit() { /* ... */ }
-        async function deleteTransaction(id) { /* ... */ }
+        async function saveTransaction() {
+            const id = document.getElementById('editId').value;
+            const title = document.getElementById('txTitle').value.trim();
+            const amount = document.getElementById('txAmount').value;
+            const type = document.getElementById('txType').value;
+
+            if (!title || !amount) return alert("Vui lòng nhập đầy đủ thông tin!");
+
+            const url = id ? `${API_URL}/transactions/${id}` : `${API_URL}/transactions`;
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: currentUserId, title, amount: parseFloat(amount), type })
+                });
+
+                alert(id ? "✅ Cập nhật thành công!" : "✅ Thêm giao dịch thành công!");
+                cancelEdit();
+                fetchTransactions();
+            } catch (e) { alert("Lỗi khi lưu giao dịch"); }
+        }
+
+        function editTransaction(id) {
+            const tx = transactions.find(t => t.id === id);
+            if (!tx) return;
+
+            document.getElementById('editId').value = tx.id;
+            document.getElementById('txTitle').value = tx.title;
+            document.getElementById('txAmount').value = tx.amount;
+            document.getElementById('txType').value = tx.type;
+
+            document.getElementById('formTitle').textContent = `✏️ Chỉnh sửa giao dịch`;
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+        }
+
+        function cancelEdit() {
+            document.getElementById('editId').value = '';
+            document.getElementById('txTitle').value = '';
+            document.getElementById('txAmount').value = '';
+            document.getElementById('formTitle').textContent = '+ Ghi chép mới';
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+        }
+
+        async function deleteTransaction(id) {
+            if (confirm("Bạn có chắc muốn xóa giao dịch này?")) {
+                await fetch(`${API_URL}/transactions/${id}`, { method: 'DELETE' });
+                fetchTransactions();
+            }
+        }
 
         function logout() {
             document.getElementById('dashboardScreen').classList.add('hidden');
@@ -186,6 +304,7 @@
             showLogin();
         }
 
+        // Khởi chạy
         window.onload = () => showLogin();
     </script>
 </body>
