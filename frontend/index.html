@@ -78,6 +78,7 @@
     </footer>
 
     <script>
+        // MẸO: Bạn có thể đổi sang 'http://localhost:5000/api' nếu đang test local máy mình nhé!
         const API_URL = 'https://fintech-backend-api-t83c.onrender.com/api';
         let transactions = [];
         let currentUserId = null;
@@ -148,7 +149,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    alert("🎉 Kết nối ví thành công! Đang tải dữ liệu từ Neon Database...");
+                    alert("🎉 Kết nối ví thành công! Đang nạp dữ liệu...");
                     const displayUser = data.fullname || username;
                     currentUserId = data.userId || data.id; 
                     
@@ -156,7 +157,7 @@
                     const container = document.getElementById('mainContainer');
                     container.className = "w-full mx-auto px-4 py-6 flex-grow max-w-6xl";
                     
-                    renderDashboard(displayUser);
+                    renderDashboardStructure(displayUser);
                     fetchTransactions();
                 } else {
                     alert("❌ Đăng nhập thất bại: " + data.message);
@@ -168,7 +169,7 @@
         }
 
         // 3. HÀM SINH CẤU TRÚC GIAO DIỆN DASHBOARD
-        function renderDashboard(user) {
+        function renderDashboardStructure(user) {
             document.getElementById('mainContainer').innerHTML = `
                 <div class="grid lg:grid-cols-3 gap-6 items-start w-full">
                     
@@ -271,7 +272,7 @@
             }
         }
 
-        // 5. RENDER BẢNG VÀ TÍNH SỐ DƯ THỰC TẾ (ĐOẠN CODE ĐÃ ĐƯỢC VIẾT TIẾP VÀ SỬA LỖI)
+        // 5. RENDER BẢNG VÀ TÍNH SỐ DƯ THỰC TẾ
         function renderTransactionTable() {
             const listContainer = document.getElementById('transactionList');
             if (!listContainer) return;
@@ -289,13 +290,15 @@
             transactions.forEach(tx => {
                 const amountNum = parseFloat(tx.amount) || 0;
                 
-                // Đồng bộ kiểu phân loại từ database (ví dụ: 'income' hoặc 'IN' tùy thuộc backend trả về)
-                const isIncome = tx.type === 'income' || tx.type === 'IN';
-                
+                // Phòng hờ nếu database chưa có trường type thì ta bẫy lỗi dựa theo số tiền âm/dương
+                // Nếu tx.type trống hoàn toàn thì số dương mặc định là income
+                const isIncome = tx.type ? (tx.type === 'income' || tx.type === 'IN') : (amountNum >= 0);
+                const standardAmount = Math.abs(amountNum); // Lấy trị tuyệt đối để hiển thị đẹp mắt
+
                 if (isIncome) {
-                    totalBalance += amountNum;
+                    totalBalance += standardAmount;
                 } else {
-                    totalBalance -= amountNum;
+                    totalBalance -= standardAmount;
                 }
 
                 const typeBadge = isIncome 
@@ -310,7 +313,7 @@
                 tr.innerHTML = `
                     <td class="py-3.5 px-6 font-semibold text-slate-700">${tx.title}</td>
                     <td class="py-3.5 px-6">${typeBadge}</td>
-                    <td class="py-3.5 px-4 text-right ${amountClass}">${prefix} ${amountNum.toLocaleString('vi-VN')} đ</td>
+                    <td class="py-3.5 px-4 text-right ${amountClass}">${prefix} ${standardAmount.toLocaleString('vi-VN')} đ</td>
                     <td class="py-3.5 px-6 text-center space-x-2">
                         <button onclick="editTransaction(${tx.id})" class="text-xs font-bold text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-all cursor-pointer"><i class="fa-solid fa-pen"></i> Sửa</button>
                         <button onclick="deleteTransaction(${tx.id})" class="text-xs font-bold text-rose-600 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg transition-all cursor-pointer"><i class="fa-solid fa-trash"></i> Xóa</button>
@@ -319,7 +322,7 @@
                 listContainer.appendChild(tr);
             });
 
-            // Hiển thị số dư được định dạng VNĐ đẹp mắt
+            // Hiển thị số dư được định dạng VNĐ
             document.getElementById('balanceDisplay').innerText = totalBalance.toLocaleString('vi-VN') + " đ";
             document.getElementById('txCount').innerText = transactions.length;
         }
@@ -347,7 +350,7 @@
                         userId: currentUserId,
                         title,
                         amount: parseFloat(amount),
-                        type
+                        type: type // Truyền phân loại lên đầy đủ
                     })
                 });
 
@@ -356,7 +359,7 @@
                     resetForm();
                     fetchTransactions();
                 } else {
-                    alert("❌ Lưu giao dịch thất bại!");
+                    alert("❌ Lưu giao dịch thất bại! Bạn vui lòng kiểm tra lại cấu trúc backend.");
                 }
             } catch (error) {
                 alert("❌ Lỗi kết nối máy chủ khi lưu giao dịch: " + error.message);
@@ -391,7 +394,8 @@
             document.getElementById('txId').value = tx.id;
             document.getElementById('txTitle').value = tx.title;
             document.getElementById('txAmount').value = tx.amount;
-            document.getElementById('txType').value = tx.type;
+            // Nếu database chưa có phân loại, tự nhận dạng dựa vào số tiền
+            document.getElementById('txType').value = tx.type || (parseFloat(tx.amount) >= 0 ? 'income' : 'expense');
 
             document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-500"></i> Chỉnh Sửa Giao Dịch #${tx.id}`;
             document.getElementById('cancelEditBtn').classList.remove('hidden');
