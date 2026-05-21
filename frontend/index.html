@@ -81,6 +81,16 @@
         const API_URL = 'https://fintech-backend-api-t83c.onrender.com/api';
         let transactions = [];
         let currentUserId = null;
+// Đọc dữ liệu user đã lưu
+const user = JSON.parse(localStorage.getItem('user'));
+
+if (user && user.id) {
+    // Sửa lại đoạn code hiển thị bị undefined. Phải là user.id thay vì id rời rạc
+    document.getElementById('user-id').innerText = `ID: ${user.id}`;
+} else {
+    // Nếu chưa đăng nhập, có thể chuyển hướng về trang login hoặc ẩn giao diện chính
+    document.getElementById('user-id').innerText = "Chưa đăng nhập";
+}
 
         // 1. CHỨC NĂNG ĐĂNG KÝ
         async function handleRegister(event) {
