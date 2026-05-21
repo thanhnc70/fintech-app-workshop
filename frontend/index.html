@@ -91,6 +91,23 @@ if (user && user.id) {
     // Nếu chưa đăng nhập, có thể chuyển hướng về trang login hoặc ẩn giao diện chính
     document.getElementById('user-id').innerText = "Chưa đăng nhập";
 }
+// Lấy thông tin user hiện tại
+const user = JSON.parse(localStorage.getItem('user'));
+
+if (!user || !user.id) {
+    alert("Vui lòng đăng nhập trước khi thực hiện giao dịch!");
+    return;
+}
+
+// Cấu trúc dữ liệu gửi lên Backend
+const transactionData = {
+    userId: user.id, // Đảm bảo truyền đúng ID người dùng lấy từ localStorage
+    title: document.getElementById('title').value,
+    amount: document.getElementById('amount').value,
+    type: document.getElementById('type').value
+};
+
+// Thực hiện gọi API fetch POST đến /api/transactions với body là JSON.stringify(transactionData)
 
         // 1. CHỨC NĂNG ĐĂNG KÝ
         async function handleRegister(event) {
