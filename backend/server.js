@@ -65,7 +65,6 @@ app.post('/api/login', async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 });
-
 // 3. API LẤY DANH SÁCH GIAO DỊCH (SỬA LẠI)
 app.get('/api/transactions', async (req, res) => {
     const { userId } = req.query;
