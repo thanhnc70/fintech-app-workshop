@@ -18,7 +18,8 @@
     </header>
 
     <main id="mainContainer" class="max-w-6xl w-full mx-auto px-4 py-8 flex-grow flex items-center justify-center">
-        <div class="grid md:grid-cols-2 gap-8 w-full max-w-4xl">
+        <!-- VÙNG 1: GIAO DIỆN ĐĂNG NHẬP / ĐĂNG KÝ (Mặc định hiển thị nếu chưa login) -->
+        <div id="authSection" class="grid md:grid-cols-2 gap-8 w-full max-w-4xl">
             
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/60 transition-all hover:shadow-md">
                 <div class="flex items-center gap-3 mb-6">
@@ -50,7 +51,7 @@
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/60 transition-all hover:shadow-md">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-md font-bold">
-                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <i class="fa-solid pointer-events-none fa-right-to-bracket"></i>
                     </div>
                     <h2 class="text-xl font-bold text-slate-800">Đăng Nhập Hệ Thống</h2>
                 </div>
@@ -69,47 +70,114 @@
                     </button>
                 </form>
             </div>
+        </div>
 
+        <!-- VÙNG 2: GIAO DIỆN QUẢN LÝ TÀI CHÍNH (Ẩn mặc định, chỉ hiện khi đã Đăng nhập) -->
+        <div id="dashboardSection" class="hidden w-full max-w-5xl space-y-6">
+            <!-- Thẻ thông tin người dùng và nút đăng xuất -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-2xl border border-slate-200/60 gap-4">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800" id="welcomeUser">Xin chào, Người dùng!</h3>
+                    <p class="text-xs font-bold text-slate-400 uppercase mt-0.5" id="user-id">ID: --</p>
+                </div>
+                <button onclick="handleLogout()" class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                </button>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Cột trái: Form nhập giao dịch -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/60 space-y-4 h-fit">
+                    <h3 class="text-md font-bold text-slate-800 border-b border-slate-100 pb-3">
+                        <i class="fa-solid fa-plus-minus text-blue-500 mr-1"></i> Lưu Giao Dịch
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Nội dung</label>
+                            <input type="text" id="title" placeholder="Ví dụ: Tiền lương, Mua sắm..." class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-500 bg-slate-50/50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Số tiền (VNĐ)</label>
+                            <input type="number" id="amount" placeholder="Nhập số tiền" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-500 bg-slate-50/50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Loại giao dịch</label>
+                            <select id="type" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-500 bg-slate-50/50">
+                                <option value="income">Thu nhập (+)</option>
+                                <option value="expense">Chi tiêu (-)</option>
+                            </select>
+                        </div>
+                        <button onclick="saveTransaction()" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg transition-all text-xs uppercase tracking-wider cursor-pointer">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Ghi dữ liệu
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Thống kê số dư và Danh sách giao dịch -->
+                <div class="md:col-span-2 space-y-6">
+                    <!-- Khối Tổng số dư -->
+                    <div class="bg-gradient-to-r from-slate-900 to-indigo-950 p-6 rounded-2xl text-white shadow-inner flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold tracking-widest text-indigo-200 uppercase">Tổng số dư hiện tại</p>
+                            <h2 class="text-3xl font-black mt-1 tracking-tight text-emerald-400" id="totalBalance">0 đ</h2>
+                        </div>
+                        <div class="text-3xl text-indigo-400 opacity-60">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+
+                    <!-- Khối Lịch sử giao dịch -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/60">
+                        <h3 class="text-md font-bold text-slate-800 border-b border-slate-100 pb-3 mb-3">
+                            <i class="fa-solid fa-list-ul text-emerald-500 mr-1"></i> Nhật ký hoạt động tài chính
+                        </h3>
+                        <div class="overflow-y-auto max-h-72 space-y-2 pr-1" id="transactionList">
+                            <!-- Danh sách được Render tự động tại đây -->
+                            <p class="text-sm text-slate-400 text-center py-6">Chưa có bản ghi dữ liệu nào.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
-    <footer class="text-center py-4 text-xs text-slate-400 font-medium border-t border-slate-200 bg-white">
+    <footer class="text-center py-4 text-xs text-slate-400 font-medium border-t border-slate-200 bg-white mt-8">
         &copy; 2026 Fintech Workshop Premium. Đồng bộ hóa dữ liệu thời gian thực.
     </footer>
 
     <script>
         const API_URL = 'https://fintech-backend-api-t83c.onrender.com/api';
-        let transactions = [];
-        let currentUserId = null;
-// Đọc dữ liệu user đã lưu
-const user = JSON.parse(localStorage.getItem('user'));
 
-if (user && user.id) {
-    // Sửa lại đoạn code hiển thị bị undefined. Phải là user.id thay vì id rời rạc
-    document.getElementById('user-id').innerText = `ID: ${user.id}`;
-} else {
-    // Nếu chưa đăng nhập, có thể chuyển hướng về trang login hoặc ẩn giao diện chính
-    document.getElementById('user-id').innerText = "Chưa đăng nhập";
-}
-// Lấy thông tin user hiện tại
-const user = JSON.parse(localStorage.getItem('user'));
+        // 1. KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP KHI TẢI TRANG
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+        });
 
-if (!user || !user.id) {
-    alert("Vui lòng đăng nhập trước khi thực hiện giao dịch!");
-    return;
-}
+        function checkAuthStatus() {
+            // Đọc dữ liệu từ localStorage theo hướng dẫn Bước 2 mục 2 trong ảnh
+            const user = JSON.parse(localStorage.getItem('user'));
+            const authSection = document.getElementById('authSection');
+            const dashboardSection = document.getElementById('dashboardSection');
 
-// Cấu trúc dữ liệu gửi lên Backend
-const transactionData = {
-    userId: user.id, // Đảm bảo truyền đúng ID người dùng lấy từ localStorage
-    title: document.getElementById('title').value,
-    amount: document.getElementById('amount').value,
-    type: document.getElementById('type').value
-};
+            if (user && user.id) {
+                // Đăng nhập rồi: Hiện Dashboard, ẩn Form đăng nhập
+                authSection.classList.add('hidden');
+                dashboardSection.classList.remove('hidden');
+                
+                // Hiển thị thông tin lên màn hình không bị lỗi #undefined
+                document.getElementById('welcomeUser').innerText = `Xin chào, ${user.fullname || user.username}!`;
+                document.getElementById('user-id').innerText = `ID: ${user.id}`;
+                
+                // Lấy danh sách giao dịch từ server về hiển thị
+                fetchTransactions(user.id);
+            } else {
+                // Chưa đăng nhập: Hiện Form đăng nhập, ẩn Dashboard
+                authSection.classList.remove('hidden');
+                dashboardSection.classList.add('hidden');
+            }
+        }
 
-// Thực hiện gọi API fetch POST đến /api/transactions với body là JSON.stringify(transactionData)
-
-        // 1. CHỨC NĂNG ĐĂNG KÝ
+        // 2. CHỨC NĂNG ĐĂNG KÝ
         async function handleRegister(event) {
             if (event) event.preventDefault();
             const fullname = document.getElementById('regFullname').value.trim();
@@ -127,20 +195,19 @@ const transactionData = {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password, fullname })
                 });
-                // Thay thế đoạn xử lý kết quả login cũ của bạn bằng đoạn này
-const data = await response.json();
-if (data.success) {
-    // Lưu toàn bộ thông tin user (gồm id, username, fullname) vào localStorage
-    localStorage.setItem('user', JSON.stringify(data.user));
-    
-    // Tải lại trang để áp dụng trạng thái đăng nhập
-    window.location.reload();
-} else {
-    alert(data.message || "Đăng nhập thất bại!");
-}
+                const data = await response.json();
+                alert(data.message);
+                if (data.success) {
+                    document.getElementById('regFullname').value = '';
+                    document.getElementById('regUsername').value = '';
+                    document.getElementById('regPassword').value = '';
+                }
+            } catch (error) {
+                alert("❌ Lỗi kết nối đám mây: " + error.message);
+            }
+        }
 
-
-        // 2. CHỨC NĂNG ĐĂNG NHẬP
+        // 3. CHỨC NĂNG ĐĂNG NHẬP (Đã sửa đổi theo đúng logic ảnh mẫu số 1)
         async function handleLogin(event) {
             if (event) event.preventDefault();
             
@@ -161,8 +228,6 @@ if (data.success) {
             }
 
             try {
-                console.log("Đang gửi yêu cầu đăng nhập tới:", `${API_URL}/login`);
-                
                 const response = await fetch(`${API_URL}/login`, {
                     method: 'POST',
                     headers: { 
@@ -172,283 +237,145 @@ if (data.success) {
                     body: JSON.stringify({ username, password })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    alert(`❌ Máy chủ từ chối (Mã lỗi ${response.status}): ${errorData.message || 'Sai tài khoản hoặc mật khẩu!'}`);
-                    return;
-                }
-
                 const data = await response.json();
-                
+
+                // Đồng bộ chuẩn hóa dữ liệu đầu ra khớp 100% với ảnh mẫu Bước 2 mục 1
                 if (data.success) {
-                    alert("🎉 Kết nối ví thành công! Đang nạp dữ liệu...");
-                    const displayUser = data.fullname || username;
-                    currentUserId = data.userId || data.id; 
-                    
-                    document.getElementById('mainHeader').classList.add('hidden');
-                    const container = document.getElementById('mainContainer');
-                    container.className = "w-full mx-auto px-4 py-6 flex-grow max-w-6xl";
-                    
-                    renderDashboardStructure(displayUser);
-                    fetchTransactions();
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.reload(); // Tải lại trang áp dụng trạng thái mới
                 } else {
-                    alert("❌ Đăng nhập thất bại: " + data.message);
+                    alert("❌ " + (data.message || "Sai tài khoản hoặc mật khẩu!"));
                 }
             } catch (error) {
-                console.error("Chi tiết lỗi kết nối máy chủ:", error);
-                alert(`🚨 KHÔNG THỂ KẾT NỐI MÁY CHỦ!\n\nChi tiết: ${error.message}`);
+                alert("❌ Lỗi kết nối máy chủ: " + error.message);
             }
         }
 
-        // 3. HÀM SINH CẤU TRÚC GIAO DIỆN DASHBOARD
-        function renderDashboardStructure(user) {
-            document.getElementById('mainContainer').innerHTML = `
-                <div class="grid lg:grid-cols-3 gap-6 items-start w-full">
-                    
-                    <div class="space-y-6 lg:col-span-1">
-                        <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden border border-indigo-500/10">
-                            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl"></div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2.5">
-                                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm"><i class="fa-solid fa-crown text-amber-400"></i></div>
-                                    <span class="text-sm font-medium text-slate-300">${user}</span>
-                                </div>
-                                <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold px-2 py-0.5 rounded-full tracking-wider uppercase">Live Neon</span>
-                            </div>
-                            <div class="mt-8">
-                                <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">Số dư khả dụng</span>
-                                <div id="balanceDisplay" class="text-3xl font-black tracking-tight mt-0.5">0 đ</div>
-                            </div>
-                            <div class="mt-6 pt-4 border-t border-white/10 flex justify-between text-xs text-slate-400">
-                                <span>Thành viên: Bạch Kim</span>
-                                <span>ID: #${currentUserId}</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200/60">
-                            <h3 id="formActionTitle" class="text-md font-bold text-slate-800 flex items-center gap-2 mb-4">
-                                <i class="fa-solid fa-square-plus text-blue-500"></i> Ghi Chép Thu Chi Mới
-                            </h3>
-                            <input type="hidden" id="txId">
-                            <div class="space-y-3.5">
-                                <div>
-                                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Tên mục giao dịch</label>
-                                    <input type="text" id="txTitle" placeholder="Ví dụ: Tiền chợ, Mua sắm..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm bg-slate-50/50">
-                                </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Số tiền (đ)</label>
-                                        <input type="number" id="txAmount" placeholder="50000" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm bg-slate-50/50">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Phân loại</label>
-                                        <select id="txType" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm bg-slate-50/50">
-                                            <option value="income">📈 Khoản Thu In</option>
-                                            <option value="expense">📉 Khoản Chi Out</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <button type="button" onclick="saveTransaction()" class="w-full mt-2 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-4 rounded-xl shadow-md shadow-slate-800/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs">
-                                    <i class="fa-solid fa-floppy-disk"></i> Lưu Giao Dịch
-                                </button>
-                                <button id="cancelEditBtn" type="button" onclick="resetForm()" class="w-full text-center text-[11px] text-slate-400 font-bold hover:text-slate-600 hidden mt-2">
-                                    Hủy bỏ chế độ chỉnh sửa
-                                </button>
-                            </div>
-                        </div>
-
-                        <button onclick="location.reload()" class="w-full py-2.5 text-center text-xs text-slate-400 font-bold hover:text-red-500 border border-dashed border-slate-300 rounded-xl transition-all cursor-pointer">
-                            <i class="fa-solid fa-power-off"></i> Đăng xuất tài khoản an toàn
-                        </button>
-                    </div>
-
-                    <div class="lg:col-span-2 space-y-4 w-full">
-                        <div class="bg-white rounded-3xl shadow-sm border border-slate-200/60 overflow-hidden">
-                            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
-                                <div class="flex items-center gap-2">
-                                    <i class="fa-solid fa-list-check text-indigo-500"></i>
-                                    <h3 class="text-sm font-bold text-slate-800">Sổ Nhật Ký Quản Lý Thu Chi (Neon Cloud)</h3>
-                                </div>
-                                <span class="text-[11px] font-bold text-slate-400 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">Tổng: <span id="txCount" class="text-indigo-600">0</span> bản ghi</span>
-                            </div>
-
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/30">
-                                            <th class="py-3 px-6">Mục nội dung</th>
-                                            <th class="py-3 px-6">Phân loại</th>
-                                            <th class="py-3 px-4 text-right">Số tiền</th>
-                                            <th class="py-3 px-6 text-center">Hành động chỉnh sửa</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="transactionList" class="divide-y divide-slate-100 text-sm"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            `;
+        // 4. ĐĂNG XUẤT TÀI KHOẢN
+        function handleLogout() {
+            localStorage.removeItem('user');
+            window.location.reload();
         }
 
-        // 4. HÀM READ - LẤY DỮ LIỆU TỪ NEON DATABASE
-        async function fetchTransactions() {
+        // 5. LẤY DANH SÁCH GIAO DỊCH TỪ BACKEND
+        async function fetchTransactions(userId) {
             try {
-                const response = await fetch(`${API_URL}/transactions?userId=${currentUserId}`);
-                const data = await response.json();
-                transactions = data.transactions || [];
-                renderTransactionTable();
+                const response = await fetch(`${API_URL}/transactions?userId=${userId}`);
+                if (!response.ok) throw new Error("Không thể tải danh sách dữ liệu");
+                
+                const list = await response.json();
+                renderTransactions(list);
             } catch (error) {
-                console.error("Lỗi tải danh sách giao dịch:", error);
+                console.error("Lỗi lấy nhật ký giao dịch:", error);
             }
         }
 
-        // 5. RENDER BẢNG VÀ TÍNH SỐ DƯ THỰC TẾ
-        function renderTransactionTable() {
-            const listContainer = document.getElementById('transactionList');
-            if (!listContainer) return;
-
-            listContainer.innerHTML = '';
-            let totalBalance = 0;
-
-            if (transactions.length === 0) {
-                listContainer.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-slate-400 font-medium">Chưa có giao dịch nào được ghi chép. Hãy thêm giao dịch mới!</td></tr>`;
-                document.getElementById('balanceDisplay').innerText = "0 đ";
-                document.getElementById('txCount').innerText = "0";
+        // 6. HIỂN THỊ DỮ LIỆU LÊN GIAO DIỆN VÀ TÍNH SỐ DƯ
+        function renderTransactions(list) {
+            const container = document.getElementById('transactionList');
+            const totalBalanceEl = document.getElementById('totalBalance');
+            
+            if (!list || list.length === 0) {
+                container.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">Chưa có dữ liệu giao dịch nào.</p>`;
+                totalBalanceEl.innerText = "0 đ";
                 return;
             }
 
-            transactions.forEach(tx => {
-                const amountNum = parseFloat(tx.amount) || 0;
-                
-                // Đọc chính xác thuộc tính type từ DB trả về để phân loại Thu/Chi
-                const isIncome = tx.type === 'income';
-                const standardAmount = Math.abs(amountNum); 
+            let html = '';
+            let total = 0;
 
+            list.forEach(item => {
+                const amount = parseFloat(item.amount);
+                const isIncome = item.type === 'income' || amount >= 0;
+                
+                // Cộng/trừ số dư tổng hợp dựa vào trường type
                 if (isIncome) {
-                    totalBalance += standardAmount;
+                    total += Math.abs(amount);
                 } else {
-                    totalBalance -= standardAmount;
+                    total -= Math.abs(amount);
                 }
 
-                const typeBadge = isIncome 
-                    ? `<span class="bg-emerald-50 text-emerald-600 border border-emerald-100 text-[11px] px-2.5 py-0.5 rounded-full font-semibold">📈 Khoản Thu</span>`
-                    : `<span class="bg-rose-50 text-rose-600 border border-rose-100 text-[11px] px-2.5 py-0.5 rounded-full font-semibold">📉 Khoản Chi</span>`;
+                const badgeClass = isIncome ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600';
+                const icon = isIncome ? 'fa-circle-arrow-down' : 'fa-circle-arrow-up';
+                const sign = isIncome ? '+' : '-';
 
-                const amountClass = isIncome ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold';
-                const prefix = isIncome ? '+' : '-';
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50/80 transition-all";
-                tr.innerHTML = `
-                    <td class="py-3.5 px-6 font-semibold text-slate-700">${tx.title}</td>
-                    <td class="py-3.5 px-6">${typeBadge}</td>
-                    <td class="py-3.5 px-4 text-right ${amountClass}">${prefix} ${standardAmount.toLocaleString('vi-VN')} đ</td>
-                    <td class="py-3.5 px-6 text-center space-x-2">
-                        <button onclick="editTransaction(${tx.id})" class="text-xs font-bold text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-all cursor-pointer"><i class="fa-solid fa-pen"></i> Sửa</button>
-                        <button onclick="deleteTransaction(${tx.id})" class="text-xs font-bold text-rose-600 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg transition-all cursor-pointer"><i class="fa-solid fa-trash"></i> Xóa</button>
-                    </td>
+                html += `
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 text-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${badgeClass}">
+                                <i class="fa-solid ${icon}"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-700">${item.title}</p>
+                                <p class="text-[10px] text-slate-400 font-medium">${new Date(item.createdat || item.createdAt).toLocaleString('vi-VN')}</p>
+                            </div>
+                        </div>
+                        <span class="font-black ${isIncome ? 'text-emerald-600' : 'text-rose-600'}">
+                            ${sign}${Math.abs(amount).toLocaleString('vi-VN')} đ
+                        </span>
+                    </div>
                 `;
-                listContainer.appendChild(tr);
             });
 
-            document.getElementById('balanceDisplay').innerText = totalBalance.toLocaleString('vi-VN') + " đ";
-            document.getElementById('txCount').innerText = transactions.length;
+            container.innerHTML = html;
+            totalBalanceEl.innerText = `${total.toLocaleString('vi-VN')} đ`;
+            
+            if(total < 0) {
+                totalBalanceEl.className = "text-3xl font-black mt-1 tracking-tight text-rose-400";
+            } else {
+                totalBalanceEl.className = "text-3xl font-black mt-1 tracking-tight text-emerald-400";
+            }
         }
 
-        // 6. CHỨC NĂNG THÊM HOẶC CẬP NHẬT GIAO DỊCH
+        // 7. LƯU GIAO DỊCH MỚI (Đã đồng bộ trường type và userId theo Bước 2 mục 3)
         async function saveTransaction() {
-            const id = document.getElementById('txId').value;
-            const title = document.getElementById('txTitle').value.trim();
-            const amount = document.getElementById('txAmount').value.trim();
-            const type = document.getElementById('txType').value;
-
-            if (!title || !amount) {
-                alert("⚠️ Vui lòng nhập đầy đủ tên mục và số tiền!");
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user || !user.id) {
+                alert("⚠️ Vui lòng đăng nhập trước khi thực hiện giao dịch!");
                 return;
             }
 
-            // Đồng bộ số tiền lưu vào DB: Nếu là expense (khoản chi) thì tự đổi sang số âm
-            let parsedAmount = parseFloat(amount);
-            if (type === 'expense' && parsedAmount > 0) {
-                parsedAmount = -parsedAmount;
-            } else if (type === 'income' && parsedAmount < 0) {
-                parsedAmount = Math.abs(parsedAmount);
+            const titleInput = document.getElementById('title');
+            const amountInput = document.getElementById('amount');
+            const typeInput = document.getElementById('type');
+
+            const title = titleInput.value.trim();
+            const amount = amountInput.value.trim();
+            const type = typeInput.value;
+
+            if (!title || !amount) {
+                alert("⚠️ Vui lòng nhập đầy đủ nội dung và số tiền!");
+                return;
             }
 
-            const url = id ? `${API_URL}/transactions/${id}` : `${API_URL}/transactions`;
-            const method = id ? 'PUT' : 'POST';
+            // Đóng gói dữ liệu đồng bộ cấu trúc chuẩn hóa gửi sang Backend
+            const transactionData = {
+                userId: user.id, 
+                title: title,
+                amount: parseFloat(amount),
+                type: type
+            };
 
             try {
-                const response = await fetch(url, {
-                    method: method,
+                const response = await fetch(`${API_URL}/transactions`, {
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userId: currentUserId,
-                        title,
-                        amount: parsedAmount,
-                        type: type 
-                    })
+                    body: JSON.stringify(transactionData)
                 });
-
-                if (response.ok) {
-                    alert(id ? "✅ Cập nhật giao dịch thành công!" : "🎉 Thêm giao dịch mới thành công!");
-                    resetForm();
-                    fetchTransactions();
+                
+                const data = await response.json();
+                if (data.success) {
+                    // Reset form nhập liệu
+                    titleInput.value = '';
+                    amountInput.value = '';
+                    // Tải lại danh sách cập nhật mới số dư tức thì
+                    fetchTransactions(user.id);
                 } else {
-                    alert("❌ Lưu giao dịch thất bại! Bạn vui lòng kiểm tra lại cấu trúc backend.");
+                    alert("❌ Lỗi: " + data.message);
                 }
             } catch (error) {
-                alert("❌ Lỗi kết nối máy chủ khi lưu giao dịch: " + error.message);
+                alert("❌ Lỗi kết nối đám mây khi lưu giao dịch: " + error.message);
             }
-        }
-
-        // 7. CHỨC NĂNG XÓA GIAO DỊCH
-        async function deleteTransaction(id) {
-            if (!confirm("❓ Bạn có chắc chắn muốn xóa mục thu chi này không?")) return;
-
-            try {
-                const response = await fetch(`${API_URL}/transactions/${id}`, {
-                    method: 'DELETE'
-                });
-
-                if (response.ok) {
-                    alert("🗑️ Đã xóa giao dịch thành công khỏi Neon SQL!");
-                    fetchTransactions();
-                } else {
-                    alert("❌ Xóa giao dịch thất bại!");
-                }
-            } catch (error) {
-                alert("❌ Lỗi kết nối máy chủ khi xóa: " + error.message);
-            }
-        }
-
-        // 8. ĐƯA GIAO DỊCH LÊN FORM ĐỂ CHỈNH SỬA
-        function editTransaction(id) {
-            const tx = transactions.find(t => t.id === id);
-            if (!tx) return;
-
-            document.getElementById('txId').value = tx.id;
-            document.getElementById('txTitle').value = tx.title;
-            
-            // Hiển thị số dương trên ô nhập tiền cho dễ nhìn
-            document.getElementById('txAmount').value = Math.abs(tx.amount);
-            document.getElementById('txType').value = tx.type || (parseFloat(tx.amount) >= 0 ? 'income' : 'expense');
-
-            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-500"></i> Chỉnh Sửa Giao Dịch #${tx.id}`;
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-        }
-
-        // 9. RESET FORM VỀ TRẠNG THÁI BAN ĐẦU
-        function resetForm() {
-            document.getElementById('txId').value = '';
-            document.getElementById('txTitle').value = '';
-            document.getElementById('txAmount').value = '';
-            document.getElementById('txType').value = 'income';
-
-            document.getElementById('formActionTitle').innerHTML = `<i class="fa-solid fa-square-plus text-blue-500"></i> Ghi Chép Thu Chi Mới`;
-            document.getElementById('cancelEditBtn').classList.add('hidden');
         }
     </script>
 </body>
