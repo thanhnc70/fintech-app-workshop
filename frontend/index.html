@@ -107,74 +107,167 @@
         </div>
     </div>
 
-   
-        <script>
-    const API_URL = "https://fintech-backend-api-t83c.onrender.com/api";
-    let currentUserId = null;
-    let currentUserName = "";
-    let transactions = [];
+    <script>
+        const API_URL = "https://fintech-backend-api-t83c.onrender.com/api";
+        let currentUserId = null;
+        let currentUserName = "";
+        let transactions = [];
 
-    // ... (giữ nguyên các hàm handleLogin, handleRegister, logout...)
-
-    async function fetchTransactions() {
-        try {
-            const res = await fetch(`${API_URL}/transactions?userId=${currentUserId}`);
-            const data = await res.json();
-            transactions = data.transactions || [];
-            renderTransactions();
-        } catch(e) {
-            console.error("Lỗi tải giao dịch:", e);
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
         }
-    }
 
-    function renderTransactions() {
-        const tbody = document.getElementById('transactionList');
-        tbody.innerHTML = '';
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
 
-        let balance = 0;
-        let totalIncome = 0;
-        let totalExpense = 0;
+        async function handleRegister() {
+            const fullname = document.getElementById('regFullname').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
 
-        transactions.forEach(tx => {
-            const amt = parseFloat(tx.amount) || 0;
-            const isIncome = tx.type === 'income' || tx.type === 'IN';
+            if (!fullname || !username || !password) return alert("Vui lòng điền đầy đủ!");
 
-            if (isIncome) {
-                totalIncome += amt;
-                balance += amt;
-            } else {
-                totalExpense += amt;
-                balance -= amt;
+            try {
+                const res = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ fullname, username, password })
+                });
+                const data = await res.json();
+                alert(data.message || "Đăng ký thành công!");
+                showLogin();
+            } catch(e) { alert("Lỗi server"); }
+        }
+
+        async function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!username || !password) return alert("Vui lòng nhập tài khoản và mật khẩu!");
+
+            try {
+                const res = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    currentUserId = data.userId;
+                    currentUserName = data.fullname || username;
+
+                    document.getElementById('authScreen').classList.add('hidden');
+                    document.getElementById('dashboardScreen').classList.remove('hidden');
+                    document.getElementById('userNameHeader').textContent = currentUserName;
+
+                    fetchTransactions();
+                } else {
+                    alert(data.message || "Sai tài khoản hoặc mật khẩu!");
+                }
+            } catch(e) { alert("Không kết nối được server"); }
+        }
+
+        async function fetchTransactions() {
+            try {
+                const res = await fetch(`${API_URL}/transactions?userId=${currentUserId}`);
+                const data = await res.json();
+                transactions = data.transactions || [];
+                renderTransactions();
+            } catch(e) {}
+        }
+
+        function renderTransactions() {
+            const tbody = document.getElementById('transactionList');
+            tbody.innerHTML = '';
+            let balance = 0, income = 0, expense = 0;
+
+            transactions.forEach(tx => {
+                const amt = parseFloat(tx.amount);
+                const isIncome = tx.type === 'income';
+                if (isIncome) { income += amt; balance += amt; } 
+                else { expense += amt; balance -= amt; }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-4">${tx.title}</td>
+                    <td><span class="px-4 py-1 rounded-full text-xs ${isIncome ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">${isIncome ? 'Thu' : 'Chi'}</span></td>
+                    <td class="text-right font-medium ${isIncome ? 'text-emerald-400' : 'text-rose-400'}">${isIncome ? '+' : '-'}${amt.toLocaleString()} đ</td>
+                    <td class="text-center space-x-3">
+                        <button onclick="editTransaction(${tx.id})" class="text-blue-400 hover:text-blue-300">Sửa</button>
+                        <button onclick="deleteTransaction(${tx.id})" class="text-rose-400 hover:text-rose-300">Xóa</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + " đ";
+        }
+
+        async function saveTransaction() {
+            const id = document.getElementById('editId').value;
+            const title = document.getElementById('txTitle').value.trim();
+            const amount = document.getElementById('txAmount').value;
+            const type = document.getElementById('txType').value;
+
+            if (!title || !amount) return alert("Vui lòng nhập đầy đủ!");
+
+            const url = id ? `${API_URL}/transactions/${id}` : `${API_URL}/transactions`;
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                await fetch(url, {
+                    method: method,
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ userId: currentUserId, title, amount: parseFloat(amount), type })
+                });
+
+                alert(id ? "✅ Cập nhật thành công!" : "✅ Thêm thành công!");
+                cancelEdit();
+                fetchTransactions();
+            } catch(e) { alert("Lỗi khi lưu"); }
+        }
+
+        function editTransaction(id) {
+            const tx = transactions.find(t => t.id === id);
+            if (!tx) return;
+
+            document.getElementById('editId').value = tx.id;
+            document.getElementById('txTitle').value = tx.title;
+            document.getElementById('txAmount').value = tx.amount;
+            document.getElementById('txType').value = tx.type;
+
+            document.getElementById('formTitle').textContent = `✏️ Chỉnh sửa giao dịch #${id}`;
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+        }
+
+        function cancelEdit() {
+            document.getElementById('editId').value = '';
+            document.getElementById('txTitle').value = '';
+            document.getElementById('txAmount').value = '';
+            document.getElementById('formTitle').textContent = '+ Ghi chép mới';
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+        }
+
+        async function deleteTransaction(id) {
+            if (confirm("Xóa giao dịch này?")) {
+                await fetch(`${API_URL}/transactions/${id}`, { method: 'DELETE' });
+                fetchTransactions();
             }
+        }
 
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="py-4">${tx.title}</td>
-                <td>
-                    <span class="px-4 py-1 rounded-full text-xs font-medium ${isIncome ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">
-                        ${isIncome ? 'Thu' : 'Chi'}
-                    </span>
-                </td>
-                <td class="text-right font-medium ${isIncome ? 'text-emerald-400' : 'text-rose-400'}">
-                    ${isIncome ? '+' : '-'}${amt.toLocaleString('vi-VN')} đ
-                </td>
-                <td class="text-center space-x-4">
-                    <button onclick="editTransaction(${tx.id})" class="text-blue-400 hover:text-blue-300">Sửa</button>
-                    <button onclick="deleteTransaction(${tx.id})" class="text-rose-400 hover:text-rose-300">Xóa</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+        function logout() {
+            document.getElementById('dashboardScreen').classList.add('hidden');
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+        }
 
-        // Cập nhật số dư, tổng thu, tổng chi
-        document.getElementById('balanceDisplay').textContent = balance.toLocaleString('vi-VN') + " đ";
-        document.getElementById('totalIncome').textContent = totalIncome.toLocaleString('vi-VN') + " đ";
-        document.getElementById('totalExpense').textContent = totalExpense.toLocaleString('vi-VN') + " đ";
-    }
-
-    // Các hàm saveTransaction, editTransaction, deleteTransaction, cancelEdit giữ nguyên như code trước
-</script>
-
-        
+        // Khởi chạy
+        window.onload = () => showLogin();
+    </script>
 </body>
 </html>
