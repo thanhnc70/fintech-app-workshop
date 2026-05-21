@@ -92,7 +92,6 @@ app.get('/api/transactions', async (req, res) => {
         res.status(500).json({ success: false, message: "Lỗi server: " + err.message });
     }
 });
-
 // 4. API THÊM MỚI GIAO DỊCH (ĐÃ CẬP NHẬT TRƯỜNG TYPE)
 app.post('/api/transactions', async (req, res) => {
     try {
